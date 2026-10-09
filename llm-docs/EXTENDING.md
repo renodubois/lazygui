@@ -1,61 +1,61 @@
-# Extending this project
+# Extending LazyGUI
 
-All source paths are relative to the project root. `<name>` denotes a future module, not an existing file. The runnable example uses a non-rendering `Entity<Catalog>`: views observe it with GPUI subscriptions; the shell alone consumes its opaque result receiver. Replace domain names as needed, keeping ownership intact.
+Read [ARCHITECTURE.md](ARCHITECTURE.md), [M1-RESULTS.md](M1-RESULTS.md) and [VERIFY.md](VERIFY.md) first. Extend the installed Git slice, not the removed catalog example. Future paths below are recipes, not empty scaffolds to create.
 
-### File-placement decision table
+## Placement
 
-| I want to add… | Put it here | Wire it from… |
-| --- | --- | --- |
-| A standalone screen | `src/views/<name>.rs`, or `<name>/mod.rs` if it owns children | `views/mod.rs`, then shell's screen selection/composition |
-| A screen-private panel/dialog | `src/views/<owner>/<name>.rs` | Owning view's `mod.rs` and constructor |
-| Truly reused presentation | `src/views/shared/<purpose>.rs` | Its actual consuming views; create only on real reuse |
-| Longer-lived product behavior | `src/<feature>/{mod,state}.rs` | Declare in `main.rs`; host above replaceable views |
-| External-service connector | `src/connectors/<provider>/` | `connectors/mod.rs`; construct dependencies in startup/host |
-| Another operation on an existing provider | Its connector operation file/interface | The feature that requests it; not directly from a view |
-| External wire DTOs | Private connector file such as `wire.rs` | Connector decoder; convert to public data where useful |
-| Data shared across features | Small focused data module if genuinely shared | Only modules needing that vocabulary; avoid a catch-all model |
-| File/config mechanics | `src/storage/` | Dependency construction and the owning workflow |
-| Authentication/restore policy | Optional `src/session/` | Stable host and requesting features, not login controls |
-| Credential-provider mechanics | Optional `src/storage/credentials.rs` | Ordered storage interface, never views |
-| Theme role/token changes | `src/theme.rs` | Startup already installs theme |
-| Feature/view/connector tests | Owning module's `tests/<subject>.rs` | Declare from its production owner under `cfg(test)` |
-| Shared test fixture | Owner's `tests/support/`, or `src/test_support/` for cross-feature use | Test-only module declarations |
+| Change | Owner / wiring |
+| --- | --- |
+| Repository readiness/switch/config policy | `src/repository/`; constructed by startup, retained in shell |
+| Files/index/staging behavior | `src/working_tree/`; intent/read interface used by repository view |
+| Commit draft/message/warning/results | `src/commit/`; native editable controls in `src/views/commit_controls.rs` |
+| Read-only HEAD/history | `src/history/`; shell retains owner and delivery |
+| Canonical patch transform | `src/diff/`; pure bytes/IDs, no views/Git I/O |
+| New local workflow (refs/stash/etc.) | Focused `src/<feature>/`; library declaration, startup injection, shell retention only when implemented |
+| Typed Git operation/codec | `src/connectors/git/`; requested by its feature, not by controls |
+| Provider-specific external transport | Future `src/connectors/<provider>/`; own typed capability/seam, no universal connector |
+| Config/file mechanics | `src/storage/`; workflow decides use/persistence |
+| Screen/private panel/dialog | `src/views/<owner>/`; parent composition and local focus/interaction |
+| Scoped action/help/click metadata | `src/views/repository/actions.rs` or owning control's definitions; not a universal executor |
+| Theme | `src/theme.rs` |
+| Suite | Owning module's `tests/<subject>.rs`, explicit `cfg(test)`/path declaration |
+| Shared fixture | Owner's `tests/support/`; cross-feature test-only `src/test_support/` |
 
-M0 adds a separately compiled capability library in `src/lib.rs`; its prototypes and owner-local suites are mapped in [ARCHITECTURE.md](ARCHITECTURE.md) and [M0-RESULTS.md](M0-RESULTS.md). When connecting M1, use those focused interfaces rather than passing the capability library as a product-wide dependency bag. Preserve the catalog until its owner/connector/views are replaced as one connected slice. The Go template oracle is not an approved production dependency.
+`src/lib.rs` exports owners/capabilities with path declarations; `src/main.rs` declares binary theme/views. Shell suites belong under `src/views/app_shell/tests/` and are registered by `app_shell/mod.rs`. Root `tests/` is only for public-library integration crates. No inline suites, sibling `*_tests.rs` or production visibility widening.
 
-A feature can legitimately touch behavior, connectors and views. Prefer predictable ownership over putting all end-to-end code into one folder.
+## Add a connected workflow
 
-### Recipe: add a new view
+1. Define a focused intent/read/result contract and authoritative owner. Views retain focus, unsubmitted local control edits, filters/scroll; owners retain business drafts/data and mutation decisions.
+2. Construct dependencies in startup. Reuse the existing shared process host, mutation gates and ordered writer; never make independent per-window gates/writers.
+3. Retain the owner above replaceable screens, with exactly one opaque update consumer. Shell delivers `apply` and `cx.notify()`; it must not interpret every feature result.
+4. Use owner identity tokens and generations to reject stale/cross-owner outcomes. A screen recreated around an existing owner must not start another initial read/delivery.
+5. For mutations, synchronously admit a retained workflow **before spawning**. Acquire the correct Worktree/Shared/All lease on a worker. Verify canonical identity/targets, dispatch explicit argv, settle child work, reconcile authoritative state even on error/cancel, then release the lease at the owner-defined reconciliation boundary.
+6. Keep workflow retention through gate waits, between commands, cleanup and opaque completion/drop. Shutdown rejects new workflows while admitted cleanup reads remain possible. UI Drop never joins/waits on child workers.
+7. Bind byte paths with literal pathspec semantics and `--`; display/clipboard text is not an operation target. Alternate indices are currently unsupported; adding them needs explicit identity/gate design.
+8. Do not automatically replay an uncertain write. Record command-specific cancellation/confirmation and observed state. Hooks/filters can have side effects even when Git exits unsuccessfully.
+9. Add installed-Git disposable fixtures and controlled error/out-of-order/cancel/close tests through production coordination. Test actual index/worktree/message bytes, not only labels.
+10. Update the matrix/setting diagnostics and run `./scripts/check.sh`. Native acceptance is separate.
 
-1. Decide whether it is a screen, owner-private child or genuinely shared presentation. Use `views/settings.rs` for a small screen; promote it to `views/settings/mod.rs` when it acquires children. Never retain both module forms simultaneously.
-2. Declare `mod settings;` in `views/mod.rs`. Keep the module private unless an actual caller outside views needs it; prefer `pub(super)` for view-local constructors.
-3. Implement rendering and local interaction state. Use a GPUI entity when stateful; a stateless rendering helper need not become an entity. Use Kit controls and stable semantic IDs/accessibility labels.
-4. Accept only the feature handles/data required by the screen. Do not pass the root view, a mutable global app struct, raw HTTP client or credential string. If new behavior must outlive this screen, create `src/<feature>/` and let the stable host retain it.
-5. Construct child views inside their parent screen; register screen selection/navigation in `app_shell.rs`. The shell chooses screens without knowing child layout internals.
-6. Keep focus, unsubmitted form edits and scroll/selection local. Keep authoritative shared records, persisted preferences and long-lived drafts in their owning feature. Do not maintain a second authoritative copy in controls.
-7. Retain subscriptions/tasks for the intended lifetime. Test dropping/recreating the view while a request is pending: work/state survive only where the owner policy requires, and no duplicate result consumers are created.
-8. Put local suites in `views/settings/tests/` (or `views/tests/settings.rs` for a single-file view), declared by that owner. Put cross-screen journeys in `views/tests/`. Exercise production constructors and semantic controls, not private fields or a fixed render tree.
-9. Update the architecture placement map and run automated checks. Native keyboard/IME/accessibility acceptance is a separate consented step.
+## Extend views/input
 
-### Recipe: add an external connector (for example, GitHub)
+Use actual Kit controls and stable semantic IDs/accessibility labels/test registration. Accept only focused owner handles/data. Popups/dialogs stay private to their owning view; no product-wide dialog registry.
 
-1. Define the product capability first: e.g. “list repository issues,” including inputs, typed data, failures and timeout semantics. Do not begin with a generic `Connector::request` or shared trait for unrelated providers.
-2. Create `connectors/github/mod.rs`, `client.rs`, `issues.rs`, `types.rs`, `error.rs`, and `tests/{binding,http}.rs`; add `mod github;` to `connectors/mod.rs`. These are recipe paths, not empty files to pre-create in the base.
-3. Keep URL validation, paths, headers, serialization, status/error decoding, redirects, TLS and request deadlines inside the connector. Expose typed operations and a context-bound client, not reqwest types. Review provider-specific base-path/proxy/auth requirements; do not blindly reuse Hamlet's root-origin validator.
-4. Bind endpoint/account credentials immutably when creating the client. Replacing an account creates a new context. Do not look up a mutable global token on each request; do not leak secrets via `Debug`, errors or logs.
-5. Construct the real adapter in `main.rs` or the stable host. Inject it into the feature that owns issue-loading behavior. The view submits an intention to that feature and reads feature state; it never executes the provider operation itself.
-6. Add an internal substitution seam with real and controlled test adapters where request outcomes vary. Scope the interface to the capability the caller uses. A Notion connector can expose different operations: sharing external I/O does not establish interchangeable semantics.
-7. Keep in-flight ownership, generations, retries and user-facing uncertainty in the feature. Connector errors are typed, not preformatted product UI. Do not replay writes automatically after timeout unless an explicit idempotency policy supports it.
-8. For tokens, implement the authentication/credential recipe first: nonsensitive metadata in files, secrets in an appropriate provider, background blocking work, ordered save/delete, observable ambiguous outcomes, and context isolation. Never persist production tokens in a sample fixture or enable live-account tests by default.
-9. Test both the connector seam and actual loopback wire behavior: malformed responses, binding/auth headers, redirects, timeouts, cancellation and redacted errors. Add feature tests for stale outcomes/account changes and view tests for loading/errors. Automated tests use disposable fake credentials and no external provider account.
-10. Document required configuration and platform constraints in `OVERVIEW.md`/`EXTENDING.md`, then run checks. Live-provider experiments need an explicit isolated setup; real keyring access is not an ordinary build/test operation.
+Resolve all contextual actions before universal actions, including contextual overrides of universal names. Use the same scoped definitions for handlers, help and clickable labels; remove shadowed shortcut labels. Menus/text prompts/editors suppress underlying repository commands. Check marked text **before** toolkit actions can clear it; leave IME/caret/selection/paste to the native controls. Body Enter is newline, subject Enter submits, configured confirmation/menu keys remain distinct. Ctrl+O is commit options only in commit editing, copy in repository context.
 
-### Recipe: add a feature, storage or dialog
+Canonical range anchors include path/side/raw snapshot, not wrapped row offsets. Refresh remaps surviving IDs or clears consumed/ambiguous anchors. Hidden/collapsed/filtered file targets cannot be staged through a retained range. Validate hunk/line/sticky/shift ranges and rapid interleaved keys on both sides.
 
-- **Feature:** add `src/<feature>/mod.rs` for coordination and `state.rs` for cohesive pure transitions; declare it in `main.rs`, inject dependencies, and retain its handle in the appropriate host. Document whether it is window-, document-, session- or process-scoped. Tests cross its same intention/read interface as callers. Do not duplicate workflows behind `cfg(test)`.
-- **Storage:** add file/provider mechanics under `storage/`; configuration data is not a general store for all product state. Define format/version, failure/atomicity behavior and migration policy. A feature decides persistence policy. If operations race (especially credential save/delete), serialize the protocol rather than create independent writers. Use temporary paths/fake providers in tests.
-- **Dialog:** put dialog content/state under its owning view, promoting the view to a directory if needed. Use Kit's window dialog host for overlay/focus/dismissal infrastructure; keep validation and operation policy with the feature. Closing a dialog is not proof that a submitted write was canceled.
-- **Tests:** preserve Rust ownership/private access with `#[cfg(test)] #[path = "tests/<subject>.rs"] mod tests;`. No inline suites or sibling `*_tests.rs`. Test-only hooks are narrow and do not widen normal visibility. Root `tests/` is only for a library's public-interface integration tests; the base is a binary crate.
+## Extend configuration/storage
 
+Add a real consumer before classifying a setting/binding as supported. `src/storage/lazygit/supported.rs` deliberately separates **supported**, **parsed unavailable**, and unknown/unsupported fields. Full LazyGit config parity is not established. Validate the entire reload candidate before replacing settings; keep source-specific diagnostics.
 
-Every feature mutation through an entity must call `cx.notify()` after changing state. Entity observation is broadcast invalidation; the completion receiver is single-consumer. A new screen uses the existing feature entity rather than creating another owner. Review [ARCHITECTURE.md](ARCHITECTURE.md) and [VERIFY.md](VERIFY.md) before extending.
+Shared YAML must remain read-only and global relative source paths frozen across switches/reloads. Startup anchors globals against invocation cwd before processing `--path`. GUI preferences/trust stay in their own namespace. Ordered storage supports writes, but current startup only reads window size/trust and shell flushes; saving resize/recent paths and approval UI require deliberate integration and tests. Replies are explicit; dropping a waiter does not undo an accepted write. No credentials/drafts/command definitions in profile files.
+
+Branch prefix rules use a conservative Go-compatible regex subset and Go-style replacement expansion, not templates. Unsupported/invalid constructs transactionally fail; do not silently substitute broader Rust semantics. Preserve repository-first/global fallback order and empty first-match behavior. New-draft preparation must never overwrite edited/recalled/cancelled drafts or re-prefix retries.
+
+`customCommands`/templates remain unavailable; the separate Go feasibility oracle/`templatesGo` route is **not an approved production helper/dependency**. Approval mechanics alone cannot enable execution. Before future execution, guard templates/suggestions/menus/final commands by source fingerprint trust. Network auto-fetch belongs to M3, not refresh.
+
+## Add another external provider
+
+First define the actual capability and immutable account/endpoint context. Keep transport, private DTO decoding, bounds/deadlines/redaction in its connector; workflow generations/retries/uncertainty belong to its feature. Inject a capability-specific fake seam and test real protocol on disposable loopback listeners only. Do not copy removed demo HTTP validation or sample deadlines as product policy.
+
+Credential/prompt/tool integration needs its own security/lifetime design. The M0 prompt bridge is fake-only, not shipped askpass/editor/signing/SSH support. Real providers/keyrings/native launches require separate consent and isolated sessions; XDG isolation does not isolate a wallet.

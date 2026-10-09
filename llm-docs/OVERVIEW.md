@@ -1,86 +1,58 @@
-# GPUI starter
+# LazyGUI — M1 inspect/stage/commit implementation
 
-A standalone Rust 2024 GUI project based on Hamlet's ownership patterns, not its chat domain. GPUI Kit is pinned to 0.7.1; Rust to 1.97.0. One window retains a non-rendering catalog feature owner, whose data is displayed by composed list/detail/search views. No Hamlet checkout, server, database, keyring, authentication, or network account is required.
+LazyGUI is a Linux Rust 2024/GPUI Kit Git client using the installed Git CLI. Startup now opens a repository, not the former catalog/HTTP demonstration. Rust 1.97.0 and GPUI Kit 0.7.1 remain pinned. Git **2.56.0 or newer** is an enforced conservative tested floor, not a claim that every flag requires that version.
 
-## Create a project
+**Status:** M0 feasibility and M1 automated acceptance passed (**188 tests**). The user confirmed the native core inspect/stage/unstage/commit loop on 2026-10-09; extended native-checklist acceptance remains pending. No full LazyGit/configuration parity is claimed. See [M1-RESULTS.md](M1-RESULTS.md) for exact test evidence, decisions and gaps.
 
-Rust has no built-in equivalent of `cargo new --template`. Use [cargo-generate](https://cargo-generate.github.io/cargo-generate/) for repeatable local/Git templates, or copy the repository and rename it. `cargo-generate` is a separate scaffolding tool, not a runtime dependency.
+## Build and human development
 
-Recommended, from the directory that will contain your new project:
-
-```sh
-# Once, when you want to install the scaffolding tool:
-cargo install cargo-generate --locked --version 0.25.0
-
-cargo generate --path ~/projects/gpui-template --name my-gui
-cd my-gui
-./scripts/check.sh
-```
-
-Generation asks permission to run a local `sed` command. Review `template/rename.rhai` before approving. The pre-hook inserts `{{project-name}}` into the root Cargo package and its matching lockfile entry in the staging copy; cargo-generate expands only Cargo.toml/Cargo.lock. The post-hook removes the hook directory. Generation requires sed (Linux), but no Python; Rust alone is enough for building. It never builds, launches a GUI or contacts a provider. Rust source, YAML and docs are excluded from Liquid processing, so ordinary braces remain intact. Do not use `--allow-commands` with unknown templates.
-
-Plain-copy alternative (choose a new, nonexistent destination):
+Install Rust/rustup, a C/C++ compiler, pkg-config, fontconfig/freetype, xkbcommon, Wayland/X11 development libraries, D-Bus libraries and Vulkan loader/driver; `.github/workflows/check.yml` lists the Ubuntu baseline. Linux is the validation target; packaging and Windows/macOS are unverified.
 
 ```sh
-mkdir ~/projects/my-gui
-tar -C ~/projects/gpui-template --exclude=.git --exclude=target --exclude='.env.*' -cf - . \
-  | tar -C ~/projects/my-gui -xf -
-cd ~/projects/my-gui
-# Rename only the exact root package entry in both files:
-sed -i 's/^name = "gpui-template"$/name = "my-gui"/' Cargo.toml Cargo.lock
-rm -rf template cargo-generate.toml scripts/test-template.sh
-git init -b main
-./scripts/check.sh
+./scripts/check.sh # format, strict Clippy, locked tests/build; never launches GUI
+# Human-run only, with disposable data and an unlocked isolated desktop:
+XDG_CONFIG_HOME="$PWD/.env.dev-config" cargo run --locked -- --path /absolute/disposable/repo
 ```
 
-Do not copy target/, user profiles, secrets or source Git history. Cargo-generate normalizes names to kebab-case by default; use --force to preserve snake_case. For manual copies, use lowercase kebab/snake package names. Cargo package name determines the binary, window title and config namespace automatically. Generated projects keep locked dependencies and no template hook directory. Nothing is published or configured on GitHub.
+Human build/watch/restart uses `./dev.sh` (Bash, Rust, Watchexec and setsid), with worktree-local `.env.dev-config`; do not copy another worktree's profile. Native launch/automation and real credential-provider access require separate explicit consent. Configuration isolation is not credential-provider isolation.
 
-## Linux setup and run
+## Opening and configuration
 
-Install Rust/rustup, a C/C++ compiler, pkg-config, fontconfig/freetype, xkbcommon, Wayland/X11 development libraries, D-Bus libraries and a Vulkan loader/driver. See the package list in `.github/workflows/check.yml` for an Ubuntu baseline. X11/Wayland GUI use needs an appropriate graphical session/driver; headless tests do not need a desktop or Secret Service. Linux is the current validation target; Windows/macOS and packaging are not claimed supported.
+Supported arguments are `--path PATH` and `--use-config-file FILE[,FILE]`, also `--name=value` forms. No arguments opens cwd; relative repository paths resolve against startup cwd, preserving Linux path bytes. Unknown arguments/missing values exit with usage/error (status 2). Repository errors produce a safe window state; older Git is rejected before installing feature owners.
 
-```sh
-./scripts/check.sh   # format, strict clippy, tests, build; no GUI launch
-# Human-run native development only:
-XDG_CONFIG_HOME="$PWD/.env.dev-config" cargo run --locked
-```
+One active repository per window; switching replaces it in place and refuses pending/queued mutations. Discovery binds canonical worktree, Git directory and common directory, including linked-worktree `.git` files. Unborn/detached repositories are usable; bare repositories are read-only history/HEAD inspection. Alternate inherited Git indices/repository-selection environment overrides are deliberately not adopted.
 
-The default is deterministic in-memory example data. Search submits with Enter or the Search button; Reload repeats the submitted query. Selection survives reload by identity. Loading, no matches and failures are visible; failed reads preserve prior data. Reads can be superseded safely.
+Shared LazyGit YAML is **read-only**:
+- CLI config list overrides `LG_CONFIG_FILE`; list order is preserved, explicit missing files fail.
+- Otherwise `CONFIG_DIR/config.yml`, or XDG/HOME lookup, searches legacy `jesseduffield/lazygit` before `lazygit`.
+- Ancestor `.lazygit.yml` sources above the root load outermost first, then `<git-dir>/lazygit.yml`. Canonical aliases are deduplicated.
+- Relative global sources are anchored to invocation cwd before `--path` processing and remain fixed across switches/reloads. No shared file/directory creation, migration or editing.
+- Supplied-field merge, bindings/legacy alternates and source-aware diagnostics are retained. Reload validates the whole candidate before replacing active policies.
 
-For build/watch/restart, install Watchexec (`cargo install watchexec-cli --locked`) and run `./dev.sh`. This Linux script requires Bash, Rust, Watchexec and setsid. It watches this crate only, retains the running client on failed builds, uses a worktree-local profile/native target, and stops only its owned processes. Closing the window does not stop the watcher. Restarts discard in-memory state.
+Supported settings are narrower than parsed settings: see [M1 configuration accounting](M1-RESULTS.md#configuration-accounting). Unavailable bindings/settings are diagnosed rather than granting their workflows. `customCommands` and Go-template execution are unavailable; a production Go helper is not approved. Auto-fetch/network workflows wait for M3 and are diagnosed, never silently launched.
 
-## Optional loopback HTTP example
+## Implemented loop
 
-Set `CATALOG_URL=http://127.0.0.1:<your-owned-port>/records` explicitly to use the read-only HTTP adapter. Only literal loopback IP addresses, HTTP and the /records path are accepted; localhost/DNS, credentials, query and fragment in configuration are rejected. Invalid configuration stops startup instead of falling back.
+Five native side panels show status, files, current branch, read-only HEAD commits, and explicitly unavailable stash; worktrees/submodules/remotes/tags/reflog tabs are labeled unavailable, not fake rows.
 
-The adapter sends `GET /records?q=<encoded-query>` and expects a 200 JSON collection:
+Files support tree/flat, substring/fuzzy text and exact status filters, visible-only ranges, panel navigation/help/copy. Two **unified** unstaged/index panes can be stacked or arranged alongside each other (not old/new side-by-side diff). Hunk/line/range staging and unstaging use canonical byte snapshots. Repeated keys wait for refresh and remap surviving identities; stale external targets are rejected. Unsafe partial formats have explicit whole-file fallback.
 
-```json
-{"items":[{"id":"one","title":"Example","description":"Details"}]}
-```
+Commit uses real subject/body Kit controls with text/IME/popup suppression, retained drafts, full previous-message recall, clipboard options, no-staged confirmation, wrapping/signoff, configured branch prefixes and literal hook-skip prefix policy. Git receives the message via stdin; hooks are not bypassed unless that explicit prefix selects `--no-verify`. Failure/cancel/uncertain outcomes are reconciled without automatic write replay.
 
-IDs must be unique/nonempty and titles nonempty. The adapter does not follow redirects, inherits no proxy, caps response bodies at 1 MiB and bounds requests with transport/feature deadlines. No local server is bundled or automatically launched. Automated HTTP tests bind disposable ephemeral loopback ports. Production providers need their own connector/policies, not this demo endpoint validator.
+Automatic refresh is polling, not a filesystem watcher: coalesced ticks do not cancel slow reads or overtake queued actions. Explicit refresh and post-write reconciliation retain usable data on failure. Closing waits asynchronously for owned process/workflow settlement; it does not block the GPUI thread.
 
-## Preferences
+## GUI profile: storage capability versus connected behavior
 
-Submitted search query only is persisted in `$XDG_CONFIG_HOME/<cargo-package>/preferences.json`, falling back to `$HOME/.config/<cargo-package>/preferences.json`. Config errors and save failures are surfaced without preventing catalog use. No records, passwords or tokens are stored. One ordered file worker operates per root; each running instance needs its own profile. Small startup reads occur before the GUI event loop; subsequent writes happen off the GPUI thread. Atomic rename is not a claim of crash-durable fsync.
+GUI files are separate: `$XDG_CONFIG_HOME/lazygui/{preferences,trust}.json`, falling back to `$HOME/.config/lazygui/`. Startup reads defaults/existing preferences and trust without creating files; window size is consumed. One shared ordered writer supports preferences and fingerprint-only trust approval/revocation and the shell flushes it on close.
 
-## LazyGUI — M0 complete, usable Git client not yet implemented
+**Current runtime does not enqueue preference saves or trust approvals/revocations.** Resizes/recent paths are not automatically persisted; loaded trust is not connected to an executable-config approval UI. Custom execution stays disabled regardless. Atomic replacement is neither multi-process locking nor crash-durable fsync. No drafts, commands or credentials belong in these files.
 
-The executable remains the catalog starter. Headless M0 capability prototypes are compiled in the library, separate from startup. The LazyGit-compatible product is documented separately:
+## Guides and historical evidence
 
-- [LAZYGIT-INVESTIGATION.md](LAZYGIT-INVESTIGATION.md): pinned v0.66.0 evidence, agreed scope, features/bindings/configuration, and approved policy exceptions.
-- [LAZYGUI-PLAN.md](LAZYGUI-PLAN.md): ownership, completed M0 gate, incremental milestones, and acceptance gates.
-- [M0-RESULTS.md](M0-RESULTS.md): 25 new Rust spike tests, 9 Go-template oracle cases, implementation decisions, interfaces and remaining limitations; no native/parity claim.
-- [Research artifacts](research/lazygit-v0.66.0/OVERVIEW.md): reproducible source-linked indexes and Linux defaults; no parity claim.
+- [ARCHITECTURE.md](ARCHITECTURE.md), [EXTENDING.md](EXTENDING.md), [CUSTOMIZE.md](CUSTOMIZE.md), [VERIFY.md](VERIFY.md).
+- [LAZYGUI-PLAN.md](LAZYGUI-PLAN.md): milestone contract and later scope.
+- [M1-RESULTS.md](M1-RESULTS.md): current automated matrix and exact check summary.
+- [M0-RESULTS.md](M0-RESULTS.md), [LAZYGIT-INVESTIGATION.md](LAZYGIT-INVESTIGATION.md), [research](research/lazygit-v0.66.0/OVERVIEW.md): historical pinned v0.66.0 evidence, not current runtime inventories.
+- [VERIFICATION-RESULTS.md](VERIFICATION-RESULTS.md): preserved original/template/M0 verification and current M1 pointer.
 
-## Guides
-
-- [ARCHITECTURE.md](ARCHITECTURE.md): module interfaces, ownership, dependencies and lifetimes.
-- [EXTENDING.md](EXTENDING.md): where new views/features/connectors/storage/tests go and how to wire them.
-- [CUSTOMIZE.md](CUSTOMIZE.md): rename/rebrand and remove the example completely.
-- [VERIFY.md](VERIFY.md): automated checks, generator smoke tests and native safety.
-- [VERIFICATION-RESULTS.md](VERIFICATION-RESULTS.md): actual local check outcomes and explicit native limitations.
-- Optional [authentication](recipes/AUTHENTICATION.md), [streaming](recipes/STREAMING.md) and [owned backend](recipes/OWNED-BACKEND.md) recipes.
-
-This repository is intentionally unlicensed for now. Decide licensing/attribution before distribution. README files are reserved for human authors; generated instructions live here.
+README/human documentation is agent-read-only. Generated documentation belongs here. Licensing remains undecided; no publication/license grant is implied.

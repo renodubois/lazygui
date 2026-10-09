@@ -1,6 +1,6 @@
 # LazyGUI implementation proposal
 
-Status: **M0 complete; M1–M5 proposed**. Product decisions/evidence: [LAZYGIT-INVESTIGATION.md](LAZYGIT-INVESTIGATION.md). [M0-RESULTS.md](M0-RESULTS.md) records the headless prototypes, decisions, passing checks and explicit limitations. The executable remains the catalog starter; no usable Git client or native parity is claimed. No duration estimates are promised.
+Status: **M0 complete; M1 automated acceptance passed (188 tests), native core loop user-confirmed, extended checklist pending; M2–M5 proposed**. Product decisions/evidence: [LAZYGIT-INVESTIGATION.md](LAZYGIT-INVESTIGATION.md). [M0-RESULTS.md](M0-RESULTS.md) preserves historical prototypes/baseline; [M1-RESULTS.md](M1-RESULTS.md) records the connected Git implementation, exact acceptance suites/check output and remaining gaps. Startup no longer runs the catalog. The user confirmed the native core loop on 2026-10-09; extended native acceptance remains pending. No full LazyGit/configuration parity or duration estimates are promised.
 
 ## Design constraints
 
@@ -11,9 +11,9 @@ Status: **M0 complete; M1–M5 proposed**. Product decisions/evidence: [LAZYGIT-
 - Do not import LazyGit's God GUI/common dependency bags, introduce an event bus, universal connector, all-purpose state struct or global dialog registry.
 - All tests reside under owning modules' `tests/`; cross-feature helpers in test-only `src/test_support/`. Never widen production visibility just to relocate suites.
 
-## Proposed ownership map
+## Ownership map: installed M1 and future scope
 
-Paths below describe the product ownership target. Some now contain M0 capability prototypes compiled through `src/lib.rs`, not startup integrations; see [M0 results](M0-RESULTS.md). Introduce later feature modules only when their workflows are implemented, not an empty full-product scaffold in M1.
+[ARCHITECTURE.md](ARCHITECTURE.md) maps the actual installed tree. Repository, working-tree, commit and history owners now connect through production startup/shell/views and `src/lib.rs`; future feature paths below remain targets, not implemented scaffolds. M0 prompt/submodule-navigation/template probes remain feasibility evidence, not installed integrations.
 
 | Module | Owns | Must not own |
 | --- | --- | --- |
@@ -32,11 +32,11 @@ Paths below describe the product ownership target. Some now contain M0 capabilit
 | `connectors/prompts/` | Private editor/sequence-editor/askpass request transport, cancellation and redaction | Credential storage, universal prompt abstraction |
 | `storage/` | Read-only LazyGit config discovery/parsing; separate ordered LazyGUI preferences and approved source-specific trust records | Git repository data cache or workflow decisions |
 | `views/repository/` | Layout/context stack, focus, local selection/scroll, contextual action dispatch and private child views | Transport access, authoritative workflow decisions |
-| `views/working_tree/`, `views/commit/`, later owner views | Native panels/dialogs and editable control state connected to feature intentions | Direct Git commands, duplicate authoritative drafts/results |
-| `views/app_shell.rs` | Retains window feature owners and views; delivers each owner's opaque outcomes once | Interpreting all feature results or centralized product-dialog policy |
-| `runtime.rs` | Execution/time substitution | Global business jobs/settings |
+| `views/commit_controls.rs`, repository-private panels and later owner views | Native controls/dialogs and editable control state connected to feature intentions | Direct Git commands, duplicate authoritative drafts/results |
+| `views/app_shell/mod.rs` | Retains window feature owners and views; delivers each owner's opaque outcomes once | Interpreting all feature results or centralized product-dialog policy |
+| `connectors/git/process.rs` | Installed worker/process execution substitution and retained workflow shutdown; GPUI shell owns its timer delivery | Global business jobs/settings |
 
-A shared process-lifetime holder may be justified for multiwindow opening, a single GUI preference writer and retained operation shutdown. If introduced, give it only those explicit responsibilities; do not call it `AppState` and move all state into it. Shared preferences must not acquire one unsynchronized writer per window.
+M1 startup constructs one shared `ProcessHost`, `MutationGates` and `OrderedStorage`, not an `AppState`. Owners admit retained workflow scopes before spawning; close asynchronously awaits settlement through cleanup/delivery and rechecks last-window removal. Preferences/trust writes are storage capabilities, but production currently only reads window size/trust and flushes: save/approve/revoke UI wiring remains open. Never create unsynchronized per-window writers/gates.
 
 ### Lifetime and consistency
 
@@ -56,7 +56,7 @@ A shared process-lifetime holder may be justified for multiwindow opening, a sin
 - Preserve Linux path bytes where possible; NUL-separated output parsing must handle spaces, tabs, newlines, leading dash names and rename old/new paths. Human-oriented/ANSI output is not a status protocol.
 - Distinguish binary diffs, modes/symlinks/gitlinks, textconv/external diff display, and canonical applicable patches. Native syntax highlighting is presentation only.
 - Use typed outputs and typed exit/error states. Diff `--no-index` has a meaningful nonzero differences result; do not classify all nonzero exits identically.
-- Determine a tested minimum Git version from used commands/flags; baseline Git 2.56.0 is observed, not an automatically justified universal minimum.
+- M1 enforces Git 2.56.0 as a conservative tested support floor before installing owners. This does not claim every flag intrinsically needs that version or older Git has been validated.
 - Background reads should avoid optional index-lock contention as upstream does. Do not set blanket environment overrides that unintentionally alter foreground operation behavior.
 - Command logs need bounded buffers and redaction. Never log secrets, credentials in URLs, editor/askpass IPC payloads, or unbounded hook output. A configured shell command is not sandboxed.
 
@@ -95,44 +95,34 @@ Resolve evidence-backed risks before building every panel:
 
 Exit: decisions logged, headless feasibility evidence, module interfaces agreed, remaining incompatibilities explicit. No native-parity claims based on compilation alone.
 
-### M1 — first usable inspect/stage/commit loop
+### M1 — connected inspect/stage/commit loop
 
-- CLI open by cwd/`--path`, one active repo/window; safe nonrepo/error state. Repository switch actions replace the current repository in place; later submodule Enter/Esc retains its parent-return stack. Ensure stale outcomes from a previous identity cannot populate the new session.
-- Recognizable five-panel skeleton and tab labels; unavailable sections/actions explicitly labeled. Files and diffs functional; status/current branch and a minimal read-only commit list for feedback. No fake Git example rows.
-- Files tree/flat mode, basic text/status filtering, selection/range navigation, global panel jumps/help/refresh/clipboard/screen layout as needed for the loop.
-- Unstaged/staged unified panes with correct focus/empty state; hunk/line/range mode, partial and whole-file stage/unstage, context/whitespace controls.
-- Native commit subject/body, cancel/retry draft retention, ordinary hooks and commit results, configured warnings and message rules. Advanced amend/fixup/editor variants can be marked unavailable until their stage.
-- Refresh on actions/external modifications, with stale-result protection and rapid-key reconciliation. Default auto-refresh/external detection policy represented; network auto-fetch not silently launched before M3. Report this temporary gap.
-- Configuration subset needed for this milestone honored; the rest diagnosed. Full `customCommands` compatibility is **not** claimed here.
+**Implemented; M1 automated matrix and final regressions passed (188 tests); native core loop user-confirmed, extended checklist pending.** Six final full checks passed after resolving fixture shutdown waits; see M1 results for coverage and bounded limitations. The executable now opens real repositories; removed demo/catalog/HTTP suites are not included in the current count.
+
+- cwd/`--path`, byte-preserving `--use-config-file` and config discovery; safe nonrepo/unsupported-Git state, in-place switching and stale identity isolation.
+- Five native panels with functional files/diffs, current branch/status and minimal raw-message read-only history. Unavailable tabs/actions are labeled; no fake Git rows.
+- Tree/flat/text/status filters, visible ranges, contextual panel/help/copy/layout controls. Key/help/click precedence is scoped to the owning view/control, not a universal executor.
+- Canonical unstaged/index unified panes; hunk/line/sticky/Shift ranges, partial/whole stage/unstage and rapid-key reconciliation. Safe partial new/delete regular text; explicit no-newline/binary/symlink/gitlink/rename/mode/zero-context/whitespace fallback.
+- Retained native commit draft, subject/body/IME/popup suppression, cancel/reopen/failure/deliberate retry, hooks, stdin message, signoff/wrapping/full recall/no-stage warning and configured branch/hook-skip prefixes.
+- Coalesced polling refresh behind slow reads/queued mutations, explicit refresh, authoritative reconciliation and no uncertain-write replay.
+- Shared canonical index/worktree/common-directory gates and retained pre-spawn workflow admission through cleanup/delivery; nonblocking owner/operation Drop and acknowledged last-window shutdown.
+- Read-only shared config with transactional reload/source diagnostics. Supported consumer subset distinguished from parsed unavailable settings; **not exact full config parity**. Prefix regex accepts a conservative Go-compatible subset; invalid/unsupported constructs transactionally fail, never silently reinterpret.
+- Separate ordered GUI preferences/trust storage capability. Startup reads window size/trust and close flushes, but automatic preference saves/recent paths and trust approval UI are not connected.
+- Network auto-fetch deferred/diagnosed until M3; `customCommands`/templates unavailable. A production Go/`templatesGo` helper remains unapproved.
 
 #### M1 automated acceptance matrix
 
-| Journey | Required assertions |
-| --- | --- |
-| Open clean/unborn/detached/bare/worktree repository | Correct identity/readiness; graceful empty states; no destructive command in unsupported contexts |
-| Files `2` → arrows/jk → Enter/`0` → Esc | Correct file target, directory expansion versus diff focus, return target and contextual help |
-| Mixed staged/unstaged file → Tab → Space | Correct index side changes; worktree bytes unchanged by stage/unstage; pane identity stable |
-| Hunk mode → `a` line mode → `v`/Shift+arrows → Space | Only selected changes reach/leave index; anchors and mode semantics match |
-| Rapid Space Space | Both intents processed against refreshed targets; next surviving hunk selected, not stale rows |
-| Stage last change / unstage last staged change | Empty pane hidden, focus follows remaining pane; all-change delete/add becomes deleted/untracked correctly |
-| Rename/new/delete/binary/symlink/mode-only | Whole-file operations correct; unsupported partial operations clearly disabled, never lossy text patch |
-| Paths with spaces/tab/newline/leading dash/non-UTF8 | Correct decoding/argv/path identity; display encoding never changes operation target |
-| External file/index change during selected action | Reconcile or reject stale target; don't apply a patch to unrelated replacement contents |
-| Commit subject Enter / Tab body / Ctrl+S or Ctrl+Enter | Correct submission/newline/focus behavior; no double submit |
-| Cancel or failed fake hook | Draft preserved, accurate error; no implied success or automatic retry; reopen and correct retry works |
-| No staged files | Upstream warning/stage-choice sequence honored, including configured warning skip behavior |
-| IME/paste/text editing | Composition/text/paste never fires global repository actions; include fake headless input and manual native verification |
-| Popup/search/copy | Context-specific precedence; Ctrl+O commit menu vs copy elsewhere; no underlying command leaks |
-| Refresh/out-of-order/drop/recreate | Only current generation applies; one result consumer; no duplicate initial work |
-| Child error/cancel/close | Owned subprocesses settled/reaped under established policy; uncertain writes reported accurately |
+The complete journey-by-journey matrix, exact owning suites/test names, assertions and check transcript are maintained in [M1-RESULTS.md](M1-RESULTS.md#automated-acceptance-matrix). It covers opening/readiness, files/directory navigation, mixed panes, partial/range/rapid keys, last-change focus, metadata/byte paths/staleness, real commit controls/hooks/retries/no-stage/message policy, synthetic IME/popup precedence, refresh/reload/out-of-order/drop, gates/close and read-only config/storage.
 
-Partial discard/reset commands can be a follow-on rather than a first-release dependency. When added, staged `d` is unstage, unstaged `d` is configured confirmed discard. Do not substitute generic GUI Delete behavior.
+Installed-Git journeys use disposable isolated repositories through the production readiness/shell/owner constructors and real headless Kit controls. Lower-level controlled suites verify the same owner coordination under held errors/cancel/panic/time, not test-only duplicate workflows. Physical input, native layout/accessibility/provider behavior cannot be inferred from these tests.
 
-#### M1 user acceptance
+Partial discard/reset is follow-on, not shipped M1 behavior; staged `d`/unstaged confirmed discard semantics must be implemented explicitly when added.
 
-Human uses disposable repository snapshots and a printed key journey to compare stock v0.66.0 and LazyGUI. Record focus transitions, selection after each operation, repeated-key behavior, dialogs, errors, result index/tree and commit message—not just screenshot resemblance. No benchmark claims until measured; set performance budgets from representative repository fixtures. X11/Wayland, IME/layouts, clipboard, keyboard-only operation and accessibility are separate checklist entries.
+#### M1 human acceptance
 
-The user drives native acceptance. Agent GUI launch/automation/real keyring access remains prohibited without separate explicit consent and an unlocked isolated test session.
+On 2026-10-09 the user confirmed the native inspect/stage/unstage/commit core loop; environment and detailed journeys were not supplied. This does not establish full-checklist acceptance. The concise disposable human checklist is in [VERIFY.md](VERIFY.md#disposable-human-acceptance-checklist--pending). Compare stock v0.66.0 focus/selection/index/worktree/commit outcomes, not screenshot resemblance. X11/Wayland, real IME/layouts, clipboard, keyboard-only operation, accessibility and responsive close remain pending. No measured performance/packaging claims.
+
+Native launch/automation/keyrings require separate explicit consent and an unlocked isolated test session; the agent performed no native launch; the user-reported core-loop test is recorded separately.
 
 ### M2 — everyday local repository workflows
 
@@ -171,6 +161,6 @@ A release names its supported workflows and gaps. Final compatibility must accou
 - Remote tests use disposable local bare repositories or fake/owned loopback listeners only. No public Git hosting, real signing keys or desktop/keyring access.
 - Cross-feature test fixtures belong in test-only `src/test_support/`; single-suite/owner-shared helpers stay local.
 
-## Template replacement
+## Completed starter replacement / current customization
 
-Follow [CUSTOMIZE.md](CUSTOMIZE.md) when implementation starts: replace the catalog owner/connector/views as a connected slice, not by simply renaming catalog records to files. Remove demo HTTP environment selection and reqwest only once references disappear; don't inherit sample fixed deadlines or serialized query persistence as Git operation policy. Update OVERVIEW/ARCHITECTURE/EXTENDING/VERIFY to actual implemented behavior as slices land.
+M1 replaced the catalog/HTTP example as a connected Git slice; demo environment selection, query persistence and sample runtime are no longer startup behavior. [CUSTOMIZE.md](CUSTOMIZE.md) describes current naming/ownership changes. Historical M0/template evidence remains preserved, but old generation smoke tests do not validate the renamed product/library/title. Do not inherit fixed sample deadlines or query persistence as Git policy.

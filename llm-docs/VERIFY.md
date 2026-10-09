@@ -1,46 +1,52 @@
 # Verification and safety
 
-## Automated
+## Automated command
 
-From the repository root: `./scripts/check.sh`, which runs cargo fmt --check, cargo clippy --locked --all-targets -- -D warnings, cargo test --locked and cargo build --locked. Building is not launching. Test fixtures use controlled schedulers/outcomes, ephemeral loopback servers and temporary files; tests do not contact real accounts or user preference paths.
+Run `./scripts/check.sh` (it changes to the repository root, so works from any directory). Its exact commands are:
 
-M0 adds isolated installed-Git fixtures and Linux owned subprocess tests to the same check command (45 total Rust tests). Fixtures clear inherited environment, use explicit temporary HOME/XDG/global/system Git configuration, disable inherited hooks/signing/credential helpers, and never contact real repositories/providers. See [M0-RESULTS.md](M0-RESULTS.md) for the exact evidence and conservative support floor (Git 2.56.0 validated).
+```sh
+cargo fmt --check
+cargo clippy --locked --all-targets -- -D warnings
+cargo test --locked
+cargo build --locked
+```
 
-The optional, separate template feasibility oracle requires a locally installed Go toolchain, fetches no modules, invokes no commands/providers, and is not part of application build or CI:
+Building is not launching. [M1-RESULTS.md](M1-RESULTS.md#final-verification-and-resolved-defects) records the actual snapshot's counts/output; [its matrix](M1-RESULTS.md#automated-acceptance-matrix) links exact suites/test names. Current product tests combine installed Git in disposable temporary repositories, actual production constructors/Kit Root controls and controlled transports/fake time. Labels/compilation alone are not acceptance.
+
+Fixtures isolate HOME/XDG/global/system Git configuration, inherited repository/index environment, hooks/signing/credential programs. Only fixture-owned hooks/children run; no user repository commits or accounts. Installed Git 2.56.0 is the validated baseline and enforced conservative floor. Owner tests cross production workflows, not cfg(test) copies. Gate/retention/shutdown tests hold real or controlled requests through cleanup/delivery.
+
+M0's historical 45 Rust tests (25 new plus 20 starter) are not today's total; starter suites were removed with the demo. Historical M0 results/investigation remain unchanged.
+
+Optional separate template feasibility oracle, not part of product build/CI:
 
 ```sh
 bash scripts/check-m0-templates.sh
 ```
 
-Its nine cases establish a Go-template implementation route, not a shipped helper or full compatibility. No native GUI, real editor/askpass provider, SSH agent or signing program is exercised.
+Nine historical Go oracle cases establish a possible route only. No `templatesGo` production helper, Go-template/custom-command parity or production dependency is approved. Do not record an oracle rerun unless actually run.
 
-The Linux CI workflow installs native build prerequisites and runs the same script. It does not invoke dev.sh, cargo run, desktop automation or credential providers.
-
-Generator smoke test (after reviewing the hook):
-
-```sh
-destination=$(mktemp -d)
-cargo generate --path "$PWD" --name smoke-gui --destination "$destination"
-(cd "$destination/smoke-gui" && ./scripts/check.sh)
-```
-
-The original template also provides `./scripts/test-template.sh`, which automates generation and the same checks using reviewed local sed hooks for kebab-case, snake_case and unchanged package names; it is omitted from generated projects. It reuses only the template's compilation artifacts.
-
-Check that the new package/lock entry/title/config namespace match smoke-gui; no Hamlet path dependencies, profiles, hook directory or source Git history should remain. The script compares both Cargo files against root-name-only replacements and confirms Rust sources are untouched. Plain copy/manual rename should pass the same locked checks. See [VERIFICATION-RESULTS.md](VERIFICATION-RESULTS.md) for actual recorded checks; claims here describe intended coverage, not native acceptance.
+Linux CI invokes the check script without dev.sh/cargo run/native desktop/provider access. Hosted CI execution is not established by local passing checks. Original template generator smoke results are historical; package/library/title changes need a fresh separate scaffolding audit before repeating those claims.
 
 ## Native safety gate
 
-Agents need separate explicit consent before launching the GUI, desktop automation or real keyring access. Require an already unlocked dedicated test workspace/session; stop if lock state is locked or unknown, and never bypass/unlock the desktop. Use worktree-local config and disposable data. If authentication is later added, XDG_CONFIG_HOME alone does not isolate shared credential providers: use a disposable OS user or demonstrably private provider/session, never the ordinary wallet for drills. Do not log/screenshot secrets.
+Agents need separate explicit consent before GUI launch, desktop automation or real keyring/provider access. Require an already unlocked dedicated test session; stop if locked/unknown, never unlock/bypass it. Use disposable repository snapshots and worktree-local GUI config. XDG config isolation does not isolate shared agents/wallets; use a disposable OS user or demonstrably private providers. No real accounts/secrets in logs/screenshots; stop only owned processes.
 
-## Human native checklist (not yet claimed verified)
+## User-reported native verification
 
-With an appropriate unlocked graphical session, run with worktree-local configuration and default memory data:
-- Window opens/resizes and list/detail layout remains usable.
-- Selecting a row updates details; keyboard focus traverses search/actions correctly.
-- Enter submits, empty search restores all records, no matches displays an empty state, Reload is responsive.
-- IME candidate Enter does not accidentally submit before commit; input selection/copy/paste work.
-- Labels/focus/actions are usable with assistive technology.
-- Preference write failures are visible; restarting restores only the submitted query.
-- A consented owned loopback server outage produces failure while old data remains; recovery needs a deliberate Reload, not hidden retry.
+On 2026-10-09 the user confirmed that the native **inspect/stage/unstage/commit core loop** worked. Environment, exact revision and detailed cases were not supplied. Record this as core-loop confirmation only; do not infer IME, accessibility, edge-case or both X11/Wayland verification. See [the acceptance record](M1-RESULTS.md#user-reported-native-acceptance--2026-10-09). Agent native-launch/provider permission is unchanged.
 
-Native GUI, IME/accessibility, packaging, Windows/macOS and external live-provider acceptance remain separate and unverified until recorded. Only owned processes may be stopped; never kill another worktree's process to free a port.
+## Disposable human acceptance checklist — pending
+
+The detailed checklist below remains pending; core-loop confirmation does not check off unreported individual journeys. The human may run the documented CLI in an unlocked isolated desktop and compare stock LazyGit v0.66.0 against disposable **local** fixtures; record exact focus/selection/index/worktree/message results, not screenshot resemblance.
+
+- [ ] Open cwd/`--path`, nested/unborn/detached/bare/linked/nonrepo; switch in place, no stale rows or writes in unsupported contexts.
+- [ ] Five-panel navigation, Files `2 → j/k/arrows → Enter/0 → Esc`, directories, tree/flat, text/status filters, visible ranges, help/copy and resizing/scroll/layout.
+- [ ] Mixed staged/unstaged: Tab side changes, `a` line/hunk, `v`/Shift+arrows, partial Space, rapid Space Space/interleaved navigation; last-change focus follows surviving pane.
+- [ ] New/delete/rename/binary/symlink/mode/no-final-newline/unusual paths: inspect independent index and worktree bytes, explicit whole-file fallback.
+- [ ] Commit subject Enter, Tab body/newline, Ctrl+S/Ctrl+Enter; cancel/reopen, fixture failing hook/corrected deliberate retry, no-stage warning/skip, signoff/wrapping/prefix and full recall.
+- [ ] Real IME candidate Enter/Escape/Tab, physical layouts, selection/edit/paste, clipboard options, popup suppression/focus restoration and keyboard-only operation.
+- [ ] External file/index changes and config reload/invalid rollback; unavailable setting/action feedback.
+- [ ] Close during a disposable local child/hook and simultaneous window closes: UI remains responsive, owned processes settle; no replay/false success.
+- [ ] X11/Wayland, assistive technology/accessibility and graphical driver behavior.
+
+Native core-loop acceptance is user-confirmed; full checklist acceptance is not claimed. Real signing/SSH/askpass/editor/provider integration, network M3 workflows, packaging/performance budgets and Windows/macOS remain separate unverified scope. Ordinary production Git hooks/signing configuration is preserved, but that does not establish live prompt compatibility.

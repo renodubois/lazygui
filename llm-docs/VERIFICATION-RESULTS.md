@@ -1,5 +1,7 @@
 # Recorded verification
 
+Original/template and M0 sections below are **historical evidence**, not current runtime documentation. The executable now installs the M1 Git owners; current exact check output, acceptance matrix and limitations are in [M1-RESULTS.md](M1-RESULTS.md). Final M1 checks passed **144 library + 44 binary = 188 tests**, strict Clippy, formatting and locked build. Five further full checks and five seeded binary runs passed. Earlier expanded-suite timeouts were resolved by replacing fixture GUI-thread blocking shutdown waits with bounded delivery pumping; production lifecycle gates were preserved. The user confirmed native core-loop acceptance on 2026-10-09; the extended checklist remains pending. See M1 results for the scoped human report.
+
 Local implementation/verification on 2026-10-08, Linux x86_64. Rust 1.97.0, Cargo 1.97.0, GPUI Kit 0.7.1, cargo-generate 0.25.0. This starter follows Hamlet's ownership patterns at commit a94c3272dcbac133d8374f84da0fd73901b72e5a; no Hamlet crate/source path is a build dependency.
 
 ## Original verification (before Python removal)
@@ -36,10 +38,10 @@ After replacing the Python workflow, `./scripts/check.sh` passed formatting, str
 
 On the same Linux/Rust/Kit baseline, `./scripts/check.sh` passed format, strict all-target Clippy, **45 Rust tests** (25 new M0 + the existing 20 starter tests), and locked build. `bash scripts/check-m0-templates.sh` separately passed **9** standard-library Go-template oracle cases with Go 1.27.1 and module/toolchain fetching disabled. Git 2.56.0 was used only against disposable isolated fixtures. Headless Root input and window-close tests ran without native desktop launch. Fake prompt IPC exercised permissions/authentication/replay/bounds/abort/cancellation/cleanup; no real helper/provider was installed or called.
 
-See [M0-RESULTS.md](M0-RESULTS.md) for decisions, exact suites and explicit remaining limitations. The executable is still the catalog starter; M0 does not establish M1 usability, full configuration/template coverage or native parity. Template generation smoke tests were not rerun for this product-feasibility change.
+See [M0-RESULTS.md](M0-RESULTS.md) for decisions, exact suites and explicit remaining limitations. At that M0 snapshot the executable was still the catalog starter; M0 did not establish M1 usability, full configuration/template coverage or native parity. Template generation smoke tests were not rerun for this product-feasibility change.
 
 ## Not established
 
-No native GUI was launched, no desktop input/automation performed, and no keyring or live external account accessed. Native startup, resizing, physical keyboard/IME, accessibility, graphical driver behavior, packaging, other operating systems and GitHub-hosted CI execution remain unverified. Local passing checks are not claims of these acceptances.
+The agent performed no native GUI launch, desktop input/automation, or keyring/live-account access. The user's 2026-10-09 core-loop confirmation is recorded separately in M1 results; it does not establish detailed resizing, physical keyboard/IME, accessibility, graphical driver, packaging, other-OS or GitHub-hosted CI verification. Local passing checks are not claims of these acceptances.
 
 Disposable recipe additions were validation probes, not production integrations or additions to the base template. No remote repository was created/pushed and no commit was made.

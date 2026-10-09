@@ -100,6 +100,7 @@ fn controlled_executor_receives_typed_read_binding() {
             Ok(process::Output {
                 code: Some(0),
                 stdout: b" M file\0".to_vec(),
+                stderr: vec![],
                 cancelled: false,
                 truncated: false,
             })

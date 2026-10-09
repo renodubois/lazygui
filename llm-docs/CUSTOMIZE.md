@@ -1,29 +1,31 @@
-# Customize or replace the example
+# Customize LazyGUI
 
-Paths/commands are relative to the repository root.
+Paths are relative to the repository root. The catalog/HTTP demonstration has already been replaced by connected repository, working-tree, history and commit owners. Do not follow historical catalog-removal instructions as current runtime setup.
 
-## Naming and branding
+## Naming and presentation
 
-Prefer `cargo generate --path <template-path> --name my-project`. For a plain copy, replace the exact `name = "gpui-template"` line in Cargo.toml/Cargo.lock with your package name (see [OVERVIEW.md](OVERVIEW.md)); do not rename dependency packages. The binary, native title, heading and configuration namespace follow env!("CARGO_PKG_NAME"); dev.sh asks Cargo to parse the manifest for the binary name. Keep Cargo.lock committed.
+The current package is `lazygui`; keep manifest/lock root entries consistent and dependencies locked. Library imports in `src/main.rs` and binary views use `lazygui` explicitly: renaming the package requires updating those imports (or declaring an intentional library name), not merely replacing Cargo text.
 
-Edit theme.rs for product visual policy. Default Kit dark tokens/assets are used; no Hamlet branding, icons, passwords, database or configuration are copied. Add assets intentionally and record ownership/licenses. Decide a license before publishing; no public grant is implied by this local starter.
+Native title and CLI usage are currently literal `LazyGUI`/`lazygui`; GUI profile namespace uses `env!("CARGO_PKG_NAME")`. Change these intentionally. `src/theme.rs` installs Kit dark theme; repository view also contains explicit product colors/layout. Assets are Kit's bundled assets, not a copied Hamlet profile. Add assets only with recorded ownership/licensing.
 
-## Remove catalog completely
+Startup reads existing/default GUI preferences, using window size, and trust; it does not currently save resize/recent paths or expose trust approval. Do not advertise automatic preference persistence without connecting ordered writes.
 
-1. Design a focused feature and its typed connector/data interface; use [EXTENDING.md](EXTENDING.md).
-2. Add src/<feature>/ and its owner-local tests, declare it in main.rs, and create its views under views/<name>/.
-3. Change app_shell::open/constructor to accept the new dependencies and retain the new feature; preserve a single result consumer and parent child-composition.
-4. Change main.rs dependency construction/default configuration. Remove CATALOG_URL selection if unused.
-5. Replace Config.query/persistence policy (or remove persistence entirely). Adapt explicit-path tests; do not reuse the query field as a generic data store.
-6. Remove src/catalog/, src/connectors/catalog/, src/views/catalog/ and catalog fixtures once no callers remain. Update connectors/mod.rs, views/mod.rs, test_support/mod.rs, view journeys, and imports/declarations in main.rs.
-7. Remove unused reqwest/serde/Tokio/etc dependencies only after checking remaining modules. Run cargo check to refresh Cargo.lock; then run ./scripts/check.sh with --locked checks.
-8. Update OVERVIEW/ARCHITECTURE/EXTENDING/VERIFY and optional recipes to describe actual behavior. Search for catalog/CATALOG_URL/query/sample IDs and review remaining references.
-9. Keep agent guidance/check scripts and isolated native development unless the new app intentionally replaces them.
+## Replace or extend the domain
 
-Do not delete only the behavior directory while views, connectors or test fixtures still refer to it. Do not replace several feature owners with one all-purpose AppState.
+1. Design focused feature owners and typed connectors. Follow [EXTENDING.md](EXTENDING.md), not a global AppState/event bus/universal executor.
+2. Update `src/lib.rs` declarations, startup dependency construction and `src/views/app_shell/mod.rs` retention/delivery as one connected slice. Views never spawn Git/process operations.
+3. Preserve one opaque result consumer per owner, identity/generation rejection and nonblocking retained shutdown. Shared gates cover actual index/worktree/common-dir resources.
+4. Update private repository/control composition and scoped key/help definitions. Keep native editing/popup suppression and explicit unavailable labels.
+5. Keep shared LazyGit YAML read-only and GUI profile mechanics separate. Remove a storage dependency only after its lifecycle/flush callers are deliberately replaced.
+6. Remove unused owner/connector/views/fixtures and dependencies together; inspect all callers before pruning Cargo.lock.
+7. Run `./scripts/check.sh`; update these agent docs and exact acceptance evidence. Human README files remain read-only.
 
-## Generation implementation
+Do not restore `CATALOG_URL`, demo HTTP or submitted-query persistence as Git configuration/workflow policy. No fixed sample request deadline or automatic write retry.
 
-cargo-generate.toml limits Liquid expansion to Cargo.toml/Cargo.lock. The pre-hook uses a fixed, locally approved sed command to replace the exact root package name with `{{project-name}}` in the staging copy. Cargo-generate then substitutes the project name, and the post-hook deletes template/. All other contents, including Rust braces and dependency versions, remain unchanged.
+## Historical scaffolding versus current product
 
-The source tree stays valid Rust/TOML with no duplicate templated manifests. Generation needs cargo-generate and sed on Linux, not Python. The project-name value is substituted by Liquid, never interpolated into a shell command. Build/check/dev scripts also need no Python. Never approve unknown template hooks without reviewing them. The fixed hook name must be updated if the original template package is renamed.
+Original cargo-generate/plain-copy smoke evidence remains in [VERIFICATION-RESULTS.md](VERIFICATION-RESULTS.md). The old generation hook assumed the root package name `gpui-template`; current product/package/library/title changes have **not** been revalidated as a distributable generic template. Do not claim that old rename smoke tests verify today's LazyGUI. Inspect and update/retest scaffolding separately if the owner requests it.
+
+Linux native development uses `./dev.sh` with worktree-local `.env.dev-config`; never copy another profile. Native launch/automation needs separate consent and an unlocked isolated session. Configuration isolation is not credential-provider isolation.
+
+This project remains unlicensed pending the owner's decision. No publication or license grant is implied.

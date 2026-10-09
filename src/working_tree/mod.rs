@@ -1,4 +1,7 @@
-//! Refresh barrier for target-dependent intents. UI keys enqueue intentions, not row targets.
+//! Retained non-rendering files/index owner and checked patch primitives.
+//! UI keys enqueue intentions, not display-row targets. Shell delivery is single-consumer.
+mod owner;
+pub use owner::{Pane, SelectionMode, Side, Update, WorkingTree};
 #[derive(Default)]
 pub struct Barrier {
     pending: usize,
@@ -29,7 +32,10 @@ impl Barrier {
 }
 /// Confirm against fresh canonical bytes immediately before dispatch.
 /// External Git can still race; Git apply/index locking is authoritative, no write retry.
-/// M1 wraps this boundary in the shared resource mutation gate.
+/// Worker-only low-level compatibility API: the caller MUST retain a shared
+/// Worktree mutation lease over this call AND authoritative reconciliation,
+/// including failure. WorkingTree does this automatically. This primitive uses
+/// default canonical context; use the owner for other options and rename entries.
 pub fn apply_selection(
     client: &crate::git::Client,
     path: &std::path::Path,
@@ -37,7 +43,15 @@ pub fn apply_selection(
     snapshot: &crate::diff::Patch,
     selected: &std::collections::BTreeSet<usize>,
 ) -> std::io::Result<()> {
-    if !snapshot.matches_snapshot(&client.diff(path, side)?) {
+    let current = if side == crate::git::Side::Worktree
+        && client.status()?.iter().any(|entry| {
+            entry.path == path.as_os_str() && entry.index == b'?' && entry.worktree == b'?'
+        }) {
+        client.untracked_diff(path)?
+    } else {
+        client.diff(path, side)?
+    };
+    if !snapshot.matches_snapshot(&current) {
         return Err(std::io::Error::other(
             "stale patch target; refresh and reconcile",
         ));

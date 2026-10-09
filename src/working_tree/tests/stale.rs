@@ -7,6 +7,16 @@ fn stale_target_never_dispatches_write_and_reverse_selection_preserves_other_sta
     f.commit();
     f.write("file", b"A\nb\nC\n");
     let client = f.client();
+    // Compatibility primitive is worker-only and requires the caller's shared
+    // lease, retained through verification, write and the assertions/readback.
+    let gates = crate::git::MutationGates::new();
+    let _lease = gates
+        .try_acquire(
+            &client.discover().unwrap(),
+            crate::git::MutationScope::Worktree,
+        )
+        .unwrap()
+        .unwrap();
     let path = std::path::Path::new("file");
     let snapshot = Patch::parse(&client.diff(path, Side::Worktree).unwrap()).unwrap();
     f.write("file", b"unrelated replacement\n");

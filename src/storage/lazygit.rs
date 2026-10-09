@@ -1,5 +1,23 @@
-//! Read-only supplied-field merge/trust feasibility. Caller supplies discovered sources in order.
-//! Complete path discovery/schema/migration remains M1–M5 work, not silently claimed here.
+//! Read-only LazyGit source discovery, supplied-field merge and typed M1 settings.
+//! Shared files are never created, migrated or written; GUI preferences/trust are separate.
+#[path = "lazygit/discovery.rs"]
+mod discovery;
+#[path = "lazygit/gui.rs"]
+pub mod gui;
+#[path = "lazygit/prefix.rs"]
+mod prefix;
+#[path = "lazygit/supported.rs"]
+mod supported;
+pub use discovery::{
+    Discovery, DiscoveryError, DiscoveryOptions, SourceKind, SourceReport, SourceStatus, discover,
+};
+pub use prefix::CommitPrefixes;
+pub use supported::{
+    DEFAULTS, DiffSettings, FileTreeSort, FilterMode, M1Settings, MessageSettings, Panel,
+    PanelSettings, RefreshSettings, ScreenMode, SplitDiff, SplitMode, WarningSettings,
+};
+pub const CUSTOM_COMMANDS_UNAVAILABLE: &str =
+    "Custom-command/template execution is unavailable until M5; no interpolation fallback.";
 use crate::input::Key;
 use serde_yaml::Value;
 use sha2::{Digest, Sha256};
@@ -29,6 +47,7 @@ pub struct Settings {
     executable: BTreeMap<PathBuf, Value>,
     sources: BTreeMap<PathBuf, bool>,
     pub diagnostics: Vec<Diagnostic>,
+    supported: M1Settings,
 }
 fn err(message: impl Into<String>) -> io::Error {
     io::Error::other(message.into())
@@ -40,6 +59,10 @@ fn merge(
     source: &PathBuf,
     origins: &mut BTreeMap<String, PathBuf>,
 ) {
+    if supplied.is_mapping() && !base.is_mapping() {
+        *base = Value::Mapping(serde_yaml::Mapping::new());
+        origins.retain(|key, _| key != path && !key.starts_with(&format!("{path}.")));
+    }
     match (base, supplied) {
         (Value::Mapping(base), Value::Mapping(supplied)) => {
             for (key, value) in supplied {
@@ -59,19 +82,32 @@ fn merge(
             }
         }
         (Value::Sequence(base), Value::Sequence(mut supplied))
-            if path == "customCommands" || path == "gui.branchColorPatterns" =>
+            if matches!(
+                path,
+                "customCommands" | "gui.branchColorPatterns" | "gui.theme.branchColorPatterns"
+            ) =>
         {
             supplied.append(base);
             *base = supplied;
             origins.insert(path.into(), source.clone());
         }
         (base, supplied) => {
+            origins.retain(|key, _| !key.starts_with(&format!("{path}.")));
             *base = supplied;
             origins.insert(path.into(), source.clone());
         }
     }
 }
 fn diagnose(value: &Value, path: &str, source: &PathBuf, output: &mut Vec<Diagnostic>) {
+    // Prefix structures (including empty ones) have an M1 consumer.
+    if matches!(path, "git.commitPrefix" | "git.commitPrefixes") {
+        output.push(Diagnostic {
+            source: source.clone(),
+            path: path.into(),
+            reason: "Supported M1 setting.",
+        });
+        return;
+    }
     match value {
         Value::Mapping(map) => {
             for (key, value) in map {
@@ -91,11 +127,23 @@ fn diagnose(value: &Value, path: &str, source: &PathBuf, output: &mut Vec<Diagno
         _ => {
             let reason = crate::input::policy_setting(path, value.as_str().unwrap_or(""))
                 .unwrap_or(if path.starts_with("customCommands.") {
-                    "Custom-command/template execution is unavailable until M5; no interpolation fallback."
+                    CUSTOM_COMMANDS_UNAVAILABLE
+                } else if matches!(path, "git.autoFetch" | "refresher.fetchInterval") {
+                    "Network auto-fetch is unavailable until M3; policy retained but no network fetch launched."
+                } else if supported::supported_path(path) {
+                    "Supported M1 setting."
+                } else if supported::parsed_unavailable_path(path) {
+                    "Parsed setting unavailable in M1; not applied."
                 } else if path.starts_with("keybinding.") {
-                    "Binding parsed; repository-context wiring begins in M1."
+                    if supported::supported_binding_path(path) {
+                        "Supported M1 binding in its active input context."
+                    } else {
+                        "Binding parsed; action unavailable in M1; not applied."
+                    }
+                } else if path == "customCommands" {
+                    CUSTOM_COMMANDS_UNAVAILABLE
                 } else {
-                    "Setting retained for feasibility only; not applied to the catalog starter."
+                    "Unsupported M1 setting retained for inspection; not applied."
                 });
             output.push(Diagnostic {
                 source: source.clone(),
@@ -129,30 +177,54 @@ fn bindings(value: &Value) -> io::Result<Vec<String>> {
         .collect()
 }
 fn validate_keys(value: &Value) -> io::Result<()> {
+    if value.is_null() {
+        return Ok(());
+    }
     if let Value::Mapping(map) = value {
-        for context in map.values() {
+        for (name, context) in map {
+            let name = name
+                .as_str()
+                .ok_or_else(|| err("keybinding context must be string"))?;
             let context = context
                 .as_mapping()
-                .ok_or_else(|| err("keybinding context must be mapping"))?;
-            for value in context.values() {
-                bindings(value)?;
+                .ok_or_else(|| err(format!("keybinding.{name}: context must be mapping")))?;
+            for (action, value) in context {
+                let action = action
+                    .as_str()
+                    .ok_or_else(|| err(format!("keybinding.{name}: action must be string")))?;
+                bindings(value).map_err(|e| err(format!("keybinding.{name}.{action}: {e}")))?;
             }
         }
+    } else {
+        return Err(err("keybinding must be mapping"));
     }
     Ok(())
 }
 impl Settings {
     pub fn load(defaults: &str, sources: &[Source]) -> io::Result<Self> {
+        let mut value: Value = serde_yaml::from_str(defaults).map_err(|e| err(e.to_string()))?;
+        if value.is_null() {
+            value = Value::Mapping(serde_yaml::Mapping::new());
+        }
+        if !value.is_mapping() {
+            return Err(err("defaults: expected mapping"));
+        }
+        let supported = M1Settings::from_value(&value)?;
         let mut settings = Self {
-            value: serde_yaml::from_str(defaults).map_err(|e| err(e.to_string()))?,
+            value,
+            supported,
             origins: BTreeMap::new(),
             executable: BTreeMap::new(),
             sources: BTreeMap::new(),
             diagnostics: Vec::new(),
         };
         for source in sources {
-            let value: Value = serde_yaml::from_str(&source.yaml)
+            let mut value: Value = serde_yaml::from_str(&source.yaml)
                 .map_err(|e| err(format!("{}: {e}", source.path.display())))?;
+            // Empty shared files are normal upstream: read-only loading does not fill them.
+            if value.is_null() {
+                value = Value::Mapping(serde_yaml::Mapping::new());
+            }
             if !value.is_mapping() {
                 return Err(err(format!("{}: expected mapping", source.path.display())));
             }
@@ -181,8 +253,23 @@ impl Settings {
                 &source.path,
                 &mut settings.origins,
             );
+            validate_keys(&settings.value["keybinding"])
+                .map_err(|e| err(format!("{}: {e}", source.path.display())))?;
+            settings.supported = M1Settings::from_value(&settings.value)
+                .map_err(|e| err(format!("{}: {e}", source.path.display())))?;
         }
         validate_keys(&settings.value["keybinding"])?;
+        if settings.value["git"]["autoFetch"].as_bool() == Some(true)
+            && !settings
+                .diagnostics
+                .iter()
+                .any(|d| d.path == "git.autoFetch")
+        {
+            settings.diagnostics.push(Diagnostic {
+                source: PathBuf::from("<defaults>"), path: "git.autoFetch".into(),
+                reason: "Network auto-fetch is unavailable until M3; policy retained but no network fetch launched.",
+            });
+        }
         Ok(settings)
     }
     /// Replace only after the entire candidate parses/validates.
@@ -207,9 +294,9 @@ impl Settings {
         Ok(result)
     }
 }
-/// Source-specific trust mechanics. Call load/save on the ordered storage worker in M1.
+/// Source-specific trust mechanics. Product writes go through `gui::OrderedStorage`.
 /// Only fingerprints/path bytes persist, never executable configuration text.
-#[derive(Default)]
+#[derive(Clone, Default)]
 pub struct Trust {
     approved: BTreeMap<PathBuf, [u8; 32]>,
 }
@@ -288,6 +375,15 @@ impl Trust {
 #[cfg(test)]
 #[path = "tests/diagnostics.rs"]
 mod diagnostic_tests;
+#[cfg(test)]
+#[path = "tests/gui_storage.rs"]
+mod gui_tests;
+#[cfg(test)]
+#[path = "tests/commit_prefix.rs"]
+mod prefix_tests;
+#[cfg(test)]
+#[path = "tests/m1_settings.rs"]
+mod supported_tests;
 #[cfg(test)]
 #[path = "tests/lazygit.rs"]
 mod tests;
