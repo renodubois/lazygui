@@ -1,0 +1,428 @@
+path,type,description,mapping
+gui.customIcons.filenames,"{""additionalProperties"": {""$ref"": ""#/$defs/IconProperties""}, ""type"": ""object""}",Map of filenames to icon properties (icon and color),needs_review
+gui.customIcons.extensions,"{""additionalProperties"": {""$ref"": ""#/$defs/IconProperties""}, ""type"": ""object""}",Map of file extensions (including the dot) to icon properties (icon and color),needs_review
+gui.scrollHeight,"{""type"": ""integer""}",The number of lines you scroll by when scrolling the main window,needs_review
+gui.scrollPastBottom,"{""type"": ""boolean""}","If true, allow scrolling past the bottom of the content in the main window",needs_review
+gui.scrollOffMargin,"{""type"": ""integer""}",See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#scroll-off-margin,needs_review
+gui.scrollOffBehavior,"{""type"": ""string""}",One of: 'margin' (default) | 'jump',needs_review
+gui.tabWidth,"{""type"": ""integer""}","The number of spaces per tab; used for everything that's shown in the main view, but probably mostly relevant for diffs.
+Note that when using a diff renderer, the renderer has its own tab width setting, so you need to pass it separately in the renderer command.",needs_review
+gui.mouseEvents,"{""type"": ""boolean""}","If true, capture mouse events.
+When mouse events are captured, it's a little harder to select text: e.g. requiring you to hold the option key when on macOS.",needs_review
+gui.skipAmendWarning,"{""type"": ""boolean""}","If true, do not show a warning when amending a commit.",needs_review
+gui.skipDiscardChangeWarning,"{""type"": ""boolean""}","If true, do not show a warning when discarding changes from a focused diff.",needs_review
+gui.skipStashWarning,"{""type"": ""boolean""}","If true, do not show warning when applying/popping the stash",needs_review
+gui.skipNoStagedFilesWarning,"{""type"": ""boolean""}","If true, do not show a warning when attempting to commit without any staged files; instead stage all unstaged files.",needs_review
+gui.skipRewordInEditorWarning,"{""type"": ""boolean""}","If true, do not show a warning when rewording a commit via an external editor",needs_review
+gui.skipSwitchWorktreeOnCheckoutWarning,"{""type"": ""boolean""}","If true, switch to a different worktree without confirmation when checking out a branch that is checked out in that worktree",needs_review
+gui.sidePanelWidth,"{""type"": ""number""}","Fraction of the total screen width to use for the left side section. You may want to pick a small number (e.g. 0.2) if you're using a narrow screen, so that you can see more of the main section.
+Number from 0 to 1.0.",needs_review
+gui.expandFocusedSidePanel,"{""type"": ""boolean""}","If true, increase the height of the focused side window; creating an accordion effect.",needs_review
+gui.expandedSidePanelWeight,"{""type"": ""integer""}","The weight of the expanded side panel, relative to the other panels. 2 means twice as tall as the other panels. Only relevant if `expandFocusedSidePanel` is true.",needs_review
+gui.shrinkSidePanelsToContent,"{""type"": ""boolean""}","If true, don't give a side panel more height than it needs to show its content; when all panels fit, the leftover height is shared among them so that they still fill the screen.",needs_review
+gui.sidePanels[][],"{""enum"": [""status"", ""files"", ""worktrees"", ""submodules"", ""branches"", ""remotes"", ""tags"", ""commits"", ""reflog"", ""stash""], ""type"": ""string""}",,needs_review
+gui.mainPanelSplitMode,"{""enum"": [""horizontal"", ""flexible"", ""vertical""], ""type"": ""string""}","Sometimes the main window is split in two (e.g. when the selected file has both staged and unstaged changes). This setting controls how the two sections are split.
+Options are:
+- 'horizontal': split the window horizontally
+- 'vertical': split the window vertically
+- 'flexible': (default) split the window horizontally if the window is wide enough, otherwise split vertically",needs_review
+gui.enlargedSideViewLocation,"{""type"": ""string""}","How the window is split when in half screen mode (i.e. after hitting '+' once).
+Possible values:
+- 'left': split the window horizontally (side panel on the left, main view on the right)
+- 'top': split the window vertically (side panel on top, main view below)",needs_review
+gui.wrapLinesInDiffView,"{""type"": ""boolean""}","If true, wrap lines in focused diffs to the width of the view. This makes it much easier to work with diffs that have long lines, e.g. paragraphs of markdown text.",needs_review
+gui.useHunkModeInDiffView,"{""type"": ""boolean""}","If true, hunk selection mode will be enabled by default when focusing a diff.",needs_review
+gui.language,"{""enum"": [""auto"", ""en"", ""zh-TW"", ""zh-CN"", ""pl"", ""nl"", ""ja"", ""ko"", ""ru""], ""type"": ""string""}",One of 'auto' (default) | 'en' | 'zh-CN' | 'zh-TW' | 'pl' | 'nl' | 'ja' | 'ko' | 'ru' | 'pt',needs_review
+gui.timeFormat,"{""type"": ""string""}","Format used when displaying time e.g. commit time.
+Uses Go's time format syntax: https://pkg.go.dev/time#Time.Format",needs_review
+gui.shortTimeFormat,"{""type"": ""string""}","Format used when displaying time if the time is less than 24 hours ago.
+Uses Go's time format syntax: https://pkg.go.dev/time#Time.Format",needs_review
+gui.colorScheme,"{""enum"": [""auto"", ""dark"", ""light""], ""type"": ""string""}","Whether the terminal has a dark or a light background. This decides whether 'darkTheme' or 'lightTheme' applies, and the colors of authors are picked to stand out against it.
+One of: 'auto' (default) | 'dark' | 'light'
+With 'auto', lazygit asks the terminal, and assumes a dark background if the terminal doesn't tell.",needs_review
+gui.theme.activeBorderColor[],"{""type"": ""string""}",,needs_review
+gui.theme.inactiveBorderColor[],"{""type"": ""string""}",,needs_review
+gui.theme.searchingActiveBorderColor[],"{""type"": ""string""}",,needs_review
+gui.theme.optionsTextColor[],"{""type"": ""string""}",,needs_review
+gui.theme.selectedLineFgColor[],"{""type"": ""string""}",,needs_review
+gui.theme.selectedLineBgColor[],"{""type"": ""string""}",,needs_review
+gui.theme.inactiveViewSelectedLineBgColor[],"{""type"": ""string""}",,needs_review
+gui.theme.cherryPickedCommitFgColor[],"{""type"": ""string""}",,needs_review
+gui.theme.cherryPickedCommitBgColor[],"{""type"": ""string""}",,needs_review
+gui.theme.markedBaseCommitFgColor[],"{""type"": ""string""}",,needs_review
+gui.theme.markedBaseCommitBgColor[],"{""type"": ""string""}",,needs_review
+gui.theme.unstagedChangesColor[],"{""type"": ""string""}",,needs_review
+gui.theme.defaultFgColor[],"{""type"": ""string""}",,needs_review
+gui.theme.authorColors,"{""additionalProperties"": {""type"": ""string""}, ""type"": ""object""}",See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-author-color,needs_review
+gui.theme.branchColorPatterns,"{""additionalProperties"": {""type"": ""string""}, ""type"": ""object""}",See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-branch-color,needs_review
+gui.darkTheme.activeBorderColor[],"{""type"": ""string""}",,needs_review
+gui.darkTheme.inactiveBorderColor[],"{""type"": ""string""}",,needs_review
+gui.darkTheme.searchingActiveBorderColor[],"{""type"": ""string""}",,needs_review
+gui.darkTheme.optionsTextColor[],"{""type"": ""string""}",,needs_review
+gui.darkTheme.selectedLineFgColor[],"{""type"": ""string""}",,needs_review
+gui.darkTheme.selectedLineBgColor[],"{""type"": ""string""}",,needs_review
+gui.darkTheme.inactiveViewSelectedLineBgColor[],"{""type"": ""string""}",,needs_review
+gui.darkTheme.cherryPickedCommitFgColor[],"{""type"": ""string""}",,needs_review
+gui.darkTheme.cherryPickedCommitBgColor[],"{""type"": ""string""}",,needs_review
+gui.darkTheme.markedBaseCommitFgColor[],"{""type"": ""string""}",,needs_review
+gui.darkTheme.markedBaseCommitBgColor[],"{""type"": ""string""}",,needs_review
+gui.darkTheme.unstagedChangesColor[],"{""type"": ""string""}",,needs_review
+gui.darkTheme.defaultFgColor[],"{""type"": ""string""}",,needs_review
+gui.darkTheme.authorColors,"{""additionalProperties"": {""type"": ""string""}, ""type"": ""object""}",See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-author-color,needs_review
+gui.darkTheme.branchColorPatterns,"{""additionalProperties"": {""type"": ""string""}, ""type"": ""object""}",See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-branch-color,needs_review
+gui.lightTheme.activeBorderColor[],"{""type"": ""string""}",,needs_review
+gui.lightTheme.inactiveBorderColor[],"{""type"": ""string""}",,needs_review
+gui.lightTheme.searchingActiveBorderColor[],"{""type"": ""string""}",,needs_review
+gui.lightTheme.optionsTextColor[],"{""type"": ""string""}",,needs_review
+gui.lightTheme.selectedLineFgColor[],"{""type"": ""string""}",,needs_review
+gui.lightTheme.selectedLineBgColor[],"{""type"": ""string""}",,needs_review
+gui.lightTheme.inactiveViewSelectedLineBgColor[],"{""type"": ""string""}",,needs_review
+gui.lightTheme.cherryPickedCommitFgColor[],"{""type"": ""string""}",,needs_review
+gui.lightTheme.cherryPickedCommitBgColor[],"{""type"": ""string""}",,needs_review
+gui.lightTheme.markedBaseCommitFgColor[],"{""type"": ""string""}",,needs_review
+gui.lightTheme.markedBaseCommitBgColor[],"{""type"": ""string""}",,needs_review
+gui.lightTheme.unstagedChangesColor[],"{""type"": ""string""}",,needs_review
+gui.lightTheme.defaultFgColor[],"{""type"": ""string""}",,needs_review
+gui.lightTheme.authorColors,"{""additionalProperties"": {""type"": ""string""}, ""type"": ""object""}",See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-author-color,needs_review
+gui.lightTheme.branchColorPatterns,"{""additionalProperties"": {""type"": ""string""}, ""type"": ""object""}",See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-branch-color,needs_review
+gui.commitLength.show,"{""type"": ""boolean""}","If true, show an indicator of commit message length",needs_review
+gui.showListFooter,"{""type"": ""boolean""}","If true, show the '5 of 20' footer at the bottom of list views",needs_review
+gui.showFileTree,"{""type"": ""boolean""}","If true, display the files in the file views as a tree. If false, display the files as a flat list.
+This can be toggled from within Lazygit with the '`' key, but that will not change the default.",needs_review
+gui.showRootItemInFileTree,"{""type"": ""boolean""}","If true, add a ""/"" root item in the file tree representing the root of the repository. It is only added when necessary, i.e. when there is more than one item at top level.",needs_review
+gui.fileTreeSortOrder,"{""enum"": [""mixed"", ""filesFirst"", ""foldersFirst""], ""type"": ""string""}","How to sort files and directories in the file tree.
+One of: 'mixed' (default) | 'filesFirst' | 'foldersFirst'",needs_review
+gui.fileTreeSortCaseSensitive,"{""type"": ""boolean""}","If true (default), sort the file tree case-sensitively.",needs_review
+gui.showNumstatInFilesView,"{""type"": ""boolean""}","If true, show the number of lines changed per file in the Files view",needs_review
+gui.showRandomTip,"{""type"": ""boolean""}","If true, show a random tip in the command log when Lazygit starts",needs_review
+gui.showCommandLog,"{""type"": ""boolean""}","If true, show the command log",needs_review
+gui.showBottomLine,"{""type"": ""boolean""}","If true, show the bottom line that contains keybinding info and useful buttons. If false, this line will be hidden except to display a loader for an in-progress action.",needs_review
+gui.showPanelJumps,"{""type"": ""boolean""}","If true, show jump-to-window keybindings in window titles.",needs_review
+gui.showIcons,"{""type"": ""boolean""}",Deprecated: use nerdFontsVersion instead,needs_review
+gui.nerdFontsVersion,"{""enum"": [""2"", ""3"", """"], ""type"": ""string""}","Nerd fonts version to use.
+One of: '2' | '3' | empty string (default)
+If empty, do not show icons.",needs_review
+gui.showFileIcons,"{""type"": ""boolean""}","If true (default), file icons are shown in the file views. Only relevant if NerdFontsVersion is not empty.",needs_review
+gui.commitGraphStyle,"{""enum"": [""auto"", ""classic"", ""detailed""], ""type"": ""string""}","How the commit graph is drawn.
+One of: 'auto' (default) | 'classic' | 'detailed'
+'detailed' connects the lines to the commit circles, and shows exactly where branches fork off and merge. It draws the graph with the git branch drawing symbols (U+F5D0 to U+F60D), so it needs a terminal that draws these itself: kitty, Ghostty, WezTerm (nightly builds), Contour, or VS Code's terminal with GPU acceleration. Other terminals need a font that contains them, such as https://github.com/rbong/flog-symbols.
+'auto' uses 'detailed' if lazygit recognizes the terminal as one that draws these symbols (kitty and Ghostty), and 'classic' otherwise.",needs_review
+gui.commitAuthorShortLength,"{""type"": ""integer""}",Length of author name in (non-expanded) commits view. 2 means show initials only.,needs_review
+gui.commitAuthorLongLength,"{""type"": ""integer""}",Length of author name in expanded commits view. 2 means show initials only.,needs_review
+gui.commitHashLength,"{""type"": ""integer""}",Length of commit hash in commits view. 0 shows '*' if NF icons aren't on.,needs_review
+gui.showBranchCommitHash,"{""type"": ""boolean""}","If true, show commit hashes alongside branch names in the branches view.",needs_review
+gui.showDivergenceFromBaseBranch,"{""enum"": [""none"", ""onlyArrow"", ""arrowAndNumber""], ""type"": ""string""}","Whether to show the divergence from the base branch in the branches view.
+One of: 'none' | 'onlyArrow'  | 'arrowAndNumber'",needs_review
+gui.commandLogSize,"{""type"": ""integer""}",Height of the command log view,needs_review
+gui.splitDiff,"{""enum"": [""auto"", ""always""], ""type"": ""string""}","Whether to split the main window when viewing file changes.
+One of: 'auto' | 'always'
+If 'auto', only split the main window when a file has both staged and unstaged changes",needs_review
+gui.screenMode,"{""enum"": [""normal"", ""half"", ""full""], ""type"": ""string""}","Default size for focused window. Can be changed from within Lazygit with '+' and '_' (but this won't change the default).
+One of: 'normal' (default) | 'half' | 'full'",needs_review
+gui.border,"{""enum"": [""single"", ""double"", ""rounded"", ""hidden"", ""bold""], ""type"": ""string""}","Window border style.
+One of 'rounded' (default) | 'single' | 'double' | 'hidden' | 'bold'",needs_review
+gui.animateExplosion,"{""type"": ""boolean""}","If true, show a seriously epic explosion animation when nuking the working tree.",needs_review
+gui.portraitMode,"{""type"": ""string""}","Whether to stack UI components on top of each other.
+One of 'auto' (default) | 'always' | 'never'",needs_review
+gui.portraitModeAutoMaxWidth,"{""type"": ""integer""}","In 'auto' mode, portrait mode will be used if the window width is less than or equal to portraitModeAutoMaxWidth and the window height is greater than or equal to portraitModeAutoMinHeight. Unused when portraitMode is not 'auto'.",needs_review
+gui.portraitModeAutoMinHeight,"{""type"": ""integer""}","In 'auto' mode, portrait mode will be used if the window width is less than or equal to portraitModeAutoMaxWidth and the window height is greater than or equal to portraitModeAutoMinHeight. Unused when portraitMode is not 'auto'.",needs_review
+gui.filterMode,"{""enum"": [""substring"", ""fuzzy""], ""type"": ""string""}","How things are filtered when typing '/'.
+One of 'substring' (default) | 'fuzzy'",needs_review
+gui.spinner.frames[],"{""type"": ""string""}",,needs_review
+gui.spinner.rate,"{""type"": ""integer""}","The ""speed"" of the spinner in milliseconds.",needs_review
+gui.statusPanelView,"{""enum"": [""dashboard"", ""allBranchesLog""], ""type"": ""string""}","Status panel view.
+One of 'dashboard' (default) | 'allBranchesLog'",needs_review
+gui.switchToFilesAfterStashPop,"{""type"": ""boolean""}","If true, jump to the Files panel after popping a stash",needs_review
+gui.switchToFilesAfterStashApply,"{""type"": ""boolean""}","If true, jump to the Files panel after applying a stash",needs_review
+gui.switchTabsWithPanelJumpKeys,"{""type"": ""boolean""}","If true, when using the panel jump keys (default 1 through 5) and target panel is already active, go to next tab instead",needs_review
+git.diffRenderers[].type,"{""enum"": [""stdinFilter"", ""extDiff"", ""rawGit""], ""type"": ""string""}",The type of diff renderer. One of: 'stdinFilter' (default) | 'extDiff' | 'rawGit',needs_review
+git.diffRenderers[].name,"{""type"": ""string""}","A name for the diff renderer, shown in the notification when cycling renderers. If not set, the name is derived from the first word of the renderer command.",needs_review
+git.diffRenderers[].colorArg,"{""enum"": [""always"", ""never""], ""type"": ""string""}",Value of the --color arg in the git diff command. Only used for type 'stdinFilter'. Some renderers want this to be set to 'always' and some want it set to 'never'.,needs_review
+git.diffRenderers[].command,"{""type"": ""string""}","The command to use for rendering diffs. This is either a stdinFilter or an external diff command, depending on the type field; not applicable if the type is 'rawGit'.
+e.g.
+diff-so-fancy
+delta --dark --paging=never
+ydiff -p cat
+difft --color=always",needs_review
+git.diffRenderers[].args[],"{""type"": ""string""}",,needs_review
+git.commit.signOff,"{""type"": ""boolean""}","If true, pass '--signoff' flag when committing",needs_review
+git.commit.autoWrapCommitMessage,"{""type"": ""boolean""}",Automatic WYSIWYG wrapping of the commit message as you type,needs_review
+git.commit.autoWrapWidth,"{""type"": ""integer""}","If autoWrapCommitMessage is true, the width to wrap to",needs_review
+git.merging.manualCommit,"{""type"": ""boolean""}","If true, run merges in a subprocess so that if a commit message is required, Lazygit will not hang
+Only applicable to unix users.",needs_review
+git.merging.args,"{""type"": ""string""}","Extra args passed to `git merge`, e.g. --no-ff",needs_review
+git.merging.squashMergeMessage,"{""type"": ""string""}","The commit message to use for a squash merge commit. Can contain ""{{selectedRef}}"" and ""{{currentBranch}}"" placeholders.",needs_review
+git.mainBranches[],"{""type"": ""string""}",,needs_review
+git.skipHookPrefix,"{""type"": ""string""}","Prefix to use when skipping hooks. E.g. if set to 'WIP', then pre-commit hooks will be skipped when the commit message starts with 'WIP'",needs_review
+git.autoFetch,"{""type"": ""boolean""}","If true, periodically fetch from remote",needs_review
+git.autoRefresh,"{""type"": ""boolean""}","If true, periodically refresh files and submodules",needs_review
+git.autoDetectExternalChanges,"{""type"": ""boolean""}","If true, poll the repo periodically for external ref changes (commits, branch updates, checkouts made outside lazygit) and refresh when one is detected. Independent of autoRefresh, which only governs the files panel.",needs_review
+git.autoForwardBranches,"{""enum"": [""none"", ""onlyMainBranches"", ""allBranches""], ""type"": ""string""}","If not ""none"", lazygit will automatically fast-forward local branches to match their upstream after fetching. Applies to branches that are not the currently checked out branch, and only to those that are strictly behind their upstream (as opposed to diverged). A branch that is checked out in another worktree is fast-forwarded there, unless that worktree has changes to tracked files or is in the middle of a rebase or bisect.
+Possible values: 'none' | 'onlyMainBranches' | 'allBranches'",needs_review
+git.fetchAll,"{""type"": ""boolean""}","If true, pass the --all arg to git fetch",needs_review
+git.autoStageResolvedConflicts,"{""type"": ""boolean""}","If true, lazygit will automatically stage files that used to have merge conflicts but no longer do; and it will also ask you if you want to continue a merge or rebase if you've resolved all conflicts. If false, it won't do either of these things.",needs_review
+git.branchLogCmd,"{""type"": ""string""}",Command used when displaying the current branch git log in the main window,needs_review
+git.allBranchesLogCmds[],"{""type"": ""string""}",,needs_review
+git.ignoreWhitespaceInDiffView,"{""type"": ""boolean""}","If true, git diffs are rendered with the `--ignore-all-space` flag, which ignores whitespace changes. Can be toggled from within Lazygit with `<ctrl+w>`.",needs_review
+git.diffContextSize,"{""type"": ""integer""}",The number of lines of context to show around each diff hunk. Can be changed from within Lazygit with the `{` and `}` keys.,needs_review
+git.renameSimilarityThreshold,"{""type"": ""integer""}","The threshold for considering a file to be renamed, in percent. Can be changed from within Lazygit with the `(` and `)` keys.",needs_review
+git.overrideGpg,"{""type"": ""boolean""}","If true, do not spawn a separate process when using GPG",needs_review
+git.disableForcePushing,"{""type"": ""boolean""}","If true, do not allow force pushes",needs_review
+git.commitPrefix[].pattern,"{""type"": ""string""}","pattern to match on. E.g. for 'feature/AB-123' to match on the AB-123 use ""^\\w+\\/(\\w+-\\w+).*""",needs_review
+git.commitPrefix[].replace,"{""type"": ""string""}","Replace directive. E.g. for 'feature/AB-123' to start the commit message with 'AB-123 ' use ""[$1] """,needs_review
+git.commitPrefixes,"{""additionalProperties"": {""items"": {""$ref"": ""#/$defs/CommitPrefixConfig""}, ""type"": ""array""}, ""type"": ""object""}",See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#predefined-commit-message-prefix,needs_review
+git.branchPrefix,"{""type"": ""string""}",See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#predefined-branch-name-prefix,needs_review
+git.parseEmoji,"{""type"": ""boolean""}","If true, parse emoji strings in commit messages e.g. render :rocket: as 🚀
+(This should really be under 'gui', not 'git')",needs_review
+git.log.order,"{""enum"": [""date-order"", ""author-date-order"", ""topo-order"", ""default""], ""type"": ""string""}","One of: 'date-order' | 'author-date-order' | 'topo-order' | 'default'
+'topo-order' makes it easier to read the git log graph, but commits may not appear chronologically. See https://git-scm.com/docs/
+
+Can be changed from within Lazygit with `Log menu -> Commit sort order` (`<ctrl+l>` in the commits window by default).",needs_review
+git.log.showGraph,"{""enum"": [""always"", ""never"", ""when-maximised""], ""type"": ""string""}","This determines whether the git graph is rendered in the commits panel
+One of 'always' | 'never' | 'when-maximised'
+
+Can be toggled from within lazygit with `Log menu -> Show git graph` (`<ctrl+l>` in the commits window by default).",needs_review
+git.log.showWholeGraph,"{""type"": ""boolean""}",displays the whole git graph by default in the commits view (equivalent to passing the `--all` argument to `git log`),needs_review
+git.localBranchSortOrder,"{""enum"": [""date"", ""recency"", ""alphabetical""], ""type"": ""string""}","How branches are sorted in the local branches view.
+One of: 'date' (default) | 'recency' | 'alphabetical'
+Can be changed from within Lazygit with the Sort Order menu (`s`) in the branches panel.",needs_review
+git.remoteBranchSortOrder,"{""enum"": [""date"", ""alphabetical""], ""type"": ""string""}","How branches are sorted in the remote branches view.
+One of: 'date' (default) | 'alphabetical'
+Can be changed from within Lazygit with the Sort Order menu (`s`) in the remote branches panel.",needs_review
+git.truncateCopiedCommitHashesTo,"{""type"": ""integer""}","When copying commit hashes to the clipboard, truncate them to this length. Set to 40 to disable truncation.",needs_review
+worktree.defaultPath,"{""type"": ""string""}","Default parent directory for new worktrees. It is offered as a candidate location alongside the parent directories of any worktrees you already have.
+A relative path is resolved against the repository's root directory, so ""../worktrees"" sits beside the repo and "".worktrees"" sits inside it.
+A leading ""~"" is expanded to your home directory, so ""~/worktrees"" works.",needs_review
+update.method,"{""enum"": [""prompt"", ""background"", ""never""], ""type"": ""string""}",One of: 'prompt' (default) | 'background' | 'never',needs_review
+update.days,"{""type"": ""integer""}",Period in days between update checks,needs_review
+refresher.refreshInterval,"{""type"": ""integer""}","File/submodule refresh interval in seconds.
+Auto-refresh can be disabled via option 'git.autoRefresh'.",needs_review
+refresher.fetchInterval,"{""type"": ""integer""}","Re-fetch interval in seconds.
+Auto-fetch can be disabled via option 'git.autoFetch'.",needs_review
+refresher.externalChangeCheckInterval,"{""type"": ""integer""}","Interval in seconds at which lazygit polls for external ref changes (commits, branch updates, checkouts made outside lazygit).
+Detection can be disabled via option 'git.autoDetectExternalChanges'.",needs_review
+confirmOnQuit,"{""type"": ""boolean""}","If true, show a confirmation popup before quitting Lazygit",needs_review
+quitOnTopLevelReturn,"{""type"": ""boolean""}","If true, exit Lazygit when the user presses escape in a context where there is nothing to cancel/close",needs_review
+os.edit,"{""type"": ""string""}","Command for editing a file. Should contain ""{{filename}}"".",needs_review
+os.editAtLine,"{""type"": ""string""}","Command for editing a file at a given line number. Should contain ""{{filename}}"", and may optionally contain ""{{line}}"".",needs_review
+os.editAtLineAndWait,"{""type"": ""string""}","Same as EditAtLine, except that the command needs to wait until the window is closed.",needs_review
+os.editInTerminal,"{""type"": ""boolean""}",Whether lazygit suspends until an edit process returns,needs_review
+os.openDirInEditor,"{""type"": ""string""}",For opening a directory in an editor,needs_review
+os.editPreset,"{""type"": ""string""}",A built-in preset that sets all of the above settings. Supported presets are defined in the getPreset function in editor_presets.go.,needs_review
+os.open,"{""type"": ""string""}","Command for opening a file, as if the file is double-clicked. Should contain ""{{filename}}"", but doesn't support ""{{line}}"".",needs_review
+os.openLink,"{""type"": ""string""}","Command for opening a link. Should contain ""{{link}}"".",needs_review
+os.copyToClipboardCmd,"{""type"": ""string""}","CopyToClipboardCmd is the command for copying to clipboard.
+See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-command-for-copying-to-and-pasting-from-clipboard",needs_review
+os.readFromClipboardCmd,"{""type"": ""string""}","ReadFromClipboardCmd is the command for reading the clipboard.
+See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-command-for-copying-to-and-pasting-from-clipboard",needs_review
+os.shellFunctionsFile,"{""type"": ""string""}","A shell startup file containing shell aliases or shell functions. This will be sourced before running any shell commands, so that shell functions are available in the `:` command prompt or even in custom commands.
+See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#using-aliases-or-functions-in-shell-commands",needs_review
+disableStartupPopups,"{""type"": ""boolean""}","If true, don't display introductory popups upon opening Lazygit.",needs_review
+customCommands[].key,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}","The key to trigger the command. Use a single letter or one of the values from https://github.com/jesseduffield/lazygit/blob/master/docs/keybindings/Custom_Keybindings.md. To bind several alternates to the same command, use a sequence (e.g. `[a, b]`).",needs_review
+customCommands[].commandMenu[],recursive,,needs_review
+customCommands[].context,"{""type"": ""string""}","The context in which to listen for the key. Valid values are: status, files, worktrees, localBranches, remotes, remoteBranches, tags, commits, reflogCommits, subCommits, commitFiles, stash, and global. Multiple contexts separated by comma are allowed; most useful for ""commits, subCommits"" or ""files, commitFiles"".",needs_review
+customCommands[].command,"{""type"": ""string""}",The command to run (using Go template syntax for placeholder values),needs_review
+customCommands[].prompts[].type,"{""type"": ""string""}",One of: 'input' | 'menu' | 'confirm' | 'menuFromCommand',needs_review
+customCommands[].prompts[].key,"{""type"": ""string""}",Used to reference the entered value from within the custom command. E.g. a prompt with `key: 'Branch'` can be referred to as `{{.Form.Branch}}` in the command,needs_review
+customCommands[].prompts[].title,"{""type"": ""string""}",The title to display in the popup panel,needs_review
+customCommands[].prompts[].initialValue,"{""type"": ""string""}","The initial value to appear in the text box.
+Only for input prompts.",needs_review
+customCommands[].prompts[].suggestions.preset,"{""enum"": [""authors"", ""branches"", ""files"", ""refs"", ""remotes"", ""remoteBranches"", ""tags""], ""type"": ""string""}",Uses built-in logic to obtain the suggestions. One of 'authors' | 'branches' | 'files' | 'refs' | 'remotes' | 'remoteBranches' | 'tags',needs_review
+customCommands[].prompts[].suggestions.command,"{""type"": ""string""}",Command to run such that each line in the output becomes a suggestion. Mutually exclusive with 'preset' field.,needs_review
+customCommands[].prompts[].body,"{""type"": ""string""}","The message of the confirmation prompt.
+Only for confirm prompts.",needs_review
+customCommands[].prompts[].options[].name,"{""type"": ""string""}",The first part of the label,needs_review
+customCommands[].prompts[].options[].description,"{""type"": ""string""}",The second part of the label,needs_review
+customCommands[].prompts[].options[].value,"{""type"": ""string""}",The value that will be used in the command,needs_review
+customCommands[].prompts[].options[].key,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",Keybinding to invoke this menu option without needing to navigate to it. Accepts either a single key or a sequence of alternates.,needs_review
+customCommands[].prompts[].command,"{""type"": ""string""}","The command to run to generate menu options
+Only for menuFromCommand prompts.",needs_review
+customCommands[].prompts[].filter,"{""type"": ""string""}","The regexp to run specifying groups which are going to be kept from the command's output.
+Only for menuFromCommand prompts.",needs_review
+customCommands[].prompts[].valueFormat,"{""type"": ""string""}","How to format matched groups from the filter to construct a menu item's value.
+Only for menuFromCommand prompts.",needs_review
+customCommands[].prompts[].labelFormat,"{""type"": ""string""}","Like valueFormat but for the labels. If `labelFormat` is not specified, `valueFormat` is shown instead.
+Only for menuFromCommand prompts.",needs_review
+customCommands[].prompts[].condition,"{""type"": ""string""}","A Go template expression evaluated against the current form state. If it resolves to empty string or 'false', the prompt is skipped.",needs_review
+customCommands[].loadingText,"{""type"": ""string""}",Text to display while waiting for command to finish,needs_review
+customCommands[].description,"{""type"": ""string""}",Label for the custom command when displayed in the keybindings menu,needs_review
+customCommands[].output,"{""enum"": [""none"", ""terminal"", ""log"", ""logWithPty"", ""popup""], ""type"": ""string""}","Where the output of the command should go. 'none' discards it, 'terminal' suspends lazygit and runs the command in the terminal (useful for commands that require user input), 'log' streams it to the command log, 'logWithPty' is like 'log' but runs the command in a pseudo terminal (can be useful for commands that produce colored output when the output is a terminal), and 'popup' shows it in a popup.",needs_review
+customCommands[].outputTitle,"{""type"": ""string""}","The title to display in the popup panel if output is set to 'popup'. If left unset, the command will be used as the title.",needs_review
+customCommands[].after.checkForConflicts,"{""type"": ""boolean""}",,needs_review
+services,"{""additionalProperties"": {""type"": ""string""}, ""type"": ""object""}",See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-pull-request-urls,needs_review
+notARepository,"{""enum"": [""prompt"", ""create"", ""skip"", ""quit""], ""type"": ""string""}","What to do when opening Lazygit outside of a git repo.
+- 'prompt': (default) ask whether to initialize a new repo or open in the most recent repo
+- 'create': initialize a new repo
+- 'skip': open most recent repo
+- 'quit': exit Lazygit",needs_review
+promptToReturnFromSubprocess,"{""type"": ""boolean""}","If true, display a confirmation when subprocess terminates. This allows you to view the output of the subprocess before returning to Lazygit.",needs_review
+keybinding.universal.quit,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.quit-alt1,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",Deprecated: add the key to `quit` instead.,needs_review
+keybinding.universal.suspendApp,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.return,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.quitWithoutChangingDirectory,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.togglePanel,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.prevItem,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.nextItem,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.prevItem-alt,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",Deprecated: add the key to `prevItem` instead.,needs_review
+keybinding.universal.nextItem-alt,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",Deprecated: add the key to `nextItem` instead.,needs_review
+keybinding.universal.prevPage,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.nextPage,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.scrollLeft,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.scrollRight,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.gotoTop,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.gotoBottom,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.gotoTop-alt,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",Deprecated: add the key to `gotoTop` instead.,needs_review
+keybinding.universal.gotoBottom-alt,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",Deprecated: add the key to `gotoBottom` instead.,needs_review
+keybinding.universal.toggleRangeSelect,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.rangeSelectDown,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.rangeSelectUp,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.prevBlock,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.nextBlock,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.prevBlock-alt,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",Deprecated: add the key to `prevBlock` instead.,needs_review
+keybinding.universal.nextBlock-alt,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",Deprecated: add the key to `nextBlock` instead.,needs_review
+keybinding.universal.nextBlock-alt2,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",Deprecated: add the key to `nextBlock` instead.,needs_review
+keybinding.universal.prevBlock-alt2,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",Deprecated: add the key to `prevBlock` instead.,needs_review
+keybinding.universal.jumpToBlock[],"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.focusMainView,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.jumpToFile,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.nextMatch,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.prevMatch,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.startSearch,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.moveWordLeft,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",<alt+left> on Mac,needs_review
+keybinding.universal.moveWordRight,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",<alt+right> on Mac,needs_review
+keybinding.universal.backspaceWord,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",<alt+backspace> on Mac,needs_review
+keybinding.universal.forwardDeleteWord,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",<alt+delete> on Mac,needs_review
+keybinding.universal.optionMenu,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.select,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.goInto,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.confirm,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.confirmMenu,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.confirmSuggestion,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.confirmInEditor,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",<meta+enter> on Mac,needs_review
+keybinding.universal.confirmInEditor-alt,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",Deprecated: add the key to `confirmInEditor` instead.,needs_review
+keybinding.universal.remove,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.new,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.newWorktree,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.edit,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.openFile,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.scrollUpMain,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.scrollDownMain,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.scrollUpMain-alt1,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",Deprecated: add the key to `scrollUpMain` instead.,needs_review
+keybinding.universal.scrollDownMain-alt1,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",Deprecated: add the key to `scrollDownMain` instead.,needs_review
+keybinding.universal.scrollUpMain-alt2,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",Deprecated: add the key to `scrollUpMain` instead.,needs_review
+keybinding.universal.scrollDownMain-alt2,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",Deprecated: add the key to `scrollDownMain` instead.,needs_review
+keybinding.universal.executeShellCommand,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.createRebaseOptionsMenu,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.pushFiles,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",'Files' appended for legacy reasons,needs_review
+keybinding.universal.pullFiles,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",'Files' appended for legacy reasons,needs_review
+keybinding.universal.refresh,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.createPatchOptionsMenu,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.nextTab,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.prevTab,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.nextScreenMode,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.prevScreenMode,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.cycleDiffRenderers,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.cycleDiffRenderersReverse,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.undo,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.redo,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.filteringMenu,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.diffingMenu,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.diffingMenu-alt,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",Deprecated: add the key to `diffingMenu` instead.,needs_review
+keybinding.universal.copyToClipboard,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.openRecentRepos,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.submitEditorText,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.extrasMenu,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.toggleWhitespaceInDiffView,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.increaseContextInDiffView,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.decreaseContextInDiffView,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.increaseRenameSimilarityThreshold,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.decreaseRenameSimilarityThreshold,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.openDiffTool,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.universal.editConfig,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.status.checkForUpdate,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.status.recentRepos,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.status.allBranchesLogGraph,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.status.allBranchesLogGraphReverse,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.files.commitChanges,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.files.commitChangesWithoutHook,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.files.amendLastCommit,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.files.commitChangesWithEditor,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.files.findBaseCommitForFixup,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.files.confirmDiscard,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.files.ignoreFile,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.files.refreshFiles,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.files.stashAllChanges,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.files.viewStashOptions,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.files.toggleStagedAll,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.files.viewResetOptions,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.files.fetch,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.files.toggleTreeView,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.files.openMergeOptions,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.files.openStatusFilter,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.files.copyFileInfoToClipboard,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.files.collapseAll,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.files.expandAll,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.branches.createPullRequest,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.branches.viewPullRequestOptions,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.branches.openPullRequestInBrowser,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.branches.copyPullRequestURL,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.branches.checkoutBranchByName,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.branches.forceCheckoutBranch,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.branches.checkoutPreviousBranch,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.branches.rebaseBranch,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.branches.renameBranch,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.branches.mergeIntoCurrentBranch,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.branches.moveCommitsToNewBranch,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.branches.viewGitFlowOptions,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.branches.fastForward,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.branches.createTag,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.branches.pushTag,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.branches.setUpstream,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.branches.fetchRemote,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.branches.addForkRemote,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.branches.sortOrder,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.squashDown,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.renameCommit,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.renameCommitWithEditor,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.viewResetOptions,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.markCommitAsFixup,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.setFixupMessage,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.createFixupCommit,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.squashAboveCommits,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.moveDownCommit,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.moveUpCommit,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.amendToCommit,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.resetCommitAuthor,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.pickCommit,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.revertCommit,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.cherryPickCopy,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.pasteCommits,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.markCommitAsBaseForRebase,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.tagCommit,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.checkoutCommit,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.resetCherryPick,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.copyCommitAttributeToClipboard,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.openLogMenu,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.openInBrowser,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.openPullRequestInBrowser,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.viewBisectOptions,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.startInteractiveRebase,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commits.selectCommitsOfCurrentBranch,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.amendAttribute.resetAuthor,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.amendAttribute.setAuthor,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.amendAttribute.addCoAuthor,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.stash.popStash,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.stash.renameStash,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commitFiles.checkoutCommitFile,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.main.prevHunk,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.main.nextHunk,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.main.prevFile,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.main.nextFile,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.main.toggleSelectHunk,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.main.pickBothHunks,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.main.editSelectHunk,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.submodules.init,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.submodules.update,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.submodules.bulkMenu,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review
+keybinding.commitMessage.commitMenu,"{""oneOf"": [{""type"": ""string""}, {""items"": {""type"": ""string""}, ""type"": ""array""}]}",,needs_review

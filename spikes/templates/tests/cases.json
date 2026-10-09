@@ -1,0 +1,94 @@
+[
+  {
+    "Name": "selected object, form, shell quoting and pipeline",
+    "Template": "git checkout {{.SelectedLocalBranch.Name | quote}} && echo {{.Form.message | quote}}",
+    "Data": {
+      "SelectedLocalBranch": {
+        "Name": "feature/it's"
+      },
+      "Form": {
+        "message": "hello world"
+      }
+    },
+    "Trusted": true,
+    "Expected": "git checkout 'feature/it'\\''s' && echo 'hello world'"
+  },
+  {
+    "Name": "conditional, variable, builtin comparison and formatting",
+    "Template": "{{$branch := .SelectedLocalBranch.Name}}{{if eq $branch \"main\"}}{{printf \"%s:%s\" $branch .Form.message}}{{else}}other{{end}}",
+    "Data": {
+      "SelectedLocalBranch": {
+        "Name": "main"
+      },
+      "Form": {
+        "message": "subject"
+      }
+    },
+    "Trusted": true,
+    "Expected": "main:subject"
+  },
+  {
+    "Name": "commit range and nested menu objects",
+    "Template": "{{range .SelectedCommitRange}}{{.Sha}} {{end}}/{{index .Form \"choice\"}}",
+    "Data": {
+      "SelectedCommitRange": [
+        {
+          "Sha": "aaaa"
+        },
+        {
+          "Sha": "bbbb"
+        }
+      ],
+      "Form": {
+        "choice": "picked"
+      }
+    },
+    "Trusted": true,
+    "Expected": "aaaa bbbb /picked"
+  },
+  {
+    "Name": "fixture runCommand in suggestion",
+    "Template": "{{runCommand \"fixture-branches\" | printf \"%s\"}}",
+    "Data": {},
+    "Commands": {
+      "fixture-branches": "main\nfeature"
+    },
+    "Trusted": true,
+    "Expected": "main\nfeature"
+  },
+  {
+    "Name": "execution blocked before template evaluation",
+    "Template": "{{runCommand \"must-not-run\"}}",
+    "Data": {},
+    "Trusted": false,
+    "Error": true
+  },
+  {
+    "Name": "unregistered fixture command fails",
+    "Template": "{{runCommand \"real-command\"}}",
+    "Data": {},
+    "Trusted": true,
+    "Error": true
+  },
+  {
+    "Name": "unknown function fails rather than interpolation fallback",
+    "Template": "{{unknown .SelectedLocalBranch.Name}}",
+    "Data": {},
+    "Trusted": true,
+    "Error": true
+  },
+  {
+    "Name": "missing object field standard Go semantics",
+    "Template": "{{.Missing}}",
+    "Data": {},
+    "Trusted": true,
+    "Expected": "<no value>"
+  },
+  {
+    "Name": "malformed template fails",
+    "Template": "{{if .Form}}",
+    "Data": {},
+    "Trusted": true,
+    "Error": true
+  }
+]
